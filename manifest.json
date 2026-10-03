@@ -2,14 +2,13 @@
   "name": "Games Clubhouse - Backgammon",
   "short_name": "Backgammon",
   "start_url": "./index.html",
-  "display": "fullscreen",
-  "orientation": "portrait",
-  "background_color": "#14110e",
-  "theme_color": "#8b5a2b",
+  "display": "standalone",
+  "background_color": "#140a05",
+  "theme_color": "#2a1810",
   "icons": [
     {
-      "src": "icon.svg",
-      "sizes": "any",
+      "src": "./icon.svg",
+      "sizes": "512x512",
       "type": "image/svg+xml",
       "purpose": "any maskable"
     }
