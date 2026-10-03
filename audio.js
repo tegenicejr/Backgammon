@@ -1,4 +1,6 @@
-// Web Audio API Synthesizer Sound Engine (Asset-free)
+/**
+ * Web Audio API Synth 音響エンジン (外部音声ファイル依存ゼロ)
+ */
 class SoundEngine {
   constructor() {
     this.ctx = null;
@@ -17,130 +19,93 @@ class SoundEngine {
     }
   }
 
-  setEnabled(val) {
-    this.enabled = val;
-  }
-
-  playDiceRoll() {
-    if (!this.enabled) return;
-    this.init();
-    if (!this.ctx) return;
-
-    const count = 3;
-    for (let i = 0; i < count; i++) {
-      const delay = i * 0.07;
+  // ダイスを振るカチャカチャ音
+  playDiceShake() {
+    if (!this.enabled || !this.ctx) return;
+    const now = this.ctx.currentTime;
+    for (let i = 0; i < 4; i++) {
       const osc = this.ctx.createOscillator();
       const gain = this.ctx.createGain();
-      const filter = this.ctx.createBiquadFilter();
-
       osc.type = 'triangle';
-      osc.frequency.setValueAtTime(220 + Math.random() * 120, this.ctx.currentTime + delay);
-      osc.frequency.exponentialRampToValueAtTime(80, this.ctx.currentTime + delay + 0.05);
-
-      filter.type = 'bandpass';
-      filter.frequency.setValueAtTime(600, this.ctx.currentTime + delay);
-      filter.Q.setValueAtTime(2.0, this.ctx.currentTime + delay);
-
-      gain.gain.setValueAtTime(0.2, this.ctx.currentTime + delay);
-      gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + delay + 0.05);
-
-      osc.connect(filter);
-      filter.connect(gain);
+      osc.frequency.setValueAtTime(300 + Math.random() * 400, now + i * 0.08);
+      gain.gain.setValueAtTime(0.2, now + i * 0.08);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + i * 0.08 + 0.06);
+      osc.connect(gain);
       gain.connect(this.ctx.destination);
-
-      osc.start(this.ctx.currentTime + delay);
-      osc.stop(this.ctx.currentTime + delay + 0.06);
+      osc.start(now + i * 0.08);
+      osc.stop(now + i * 0.08 + 0.07);
     }
   }
 
+  // 駒の着地音（温かみのある木製サウンド）
   playCheckerMove() {
-    if (!this.enabled) return;
-    this.init();
-    if (!this.ctx) return;
-
+    if (!this.enabled || !this.ctx) return;
+    const now = this.ctx.currentTime;
     const osc = this.ctx.createOscillator();
     const gain = this.ctx.createGain();
-
     osc.type = 'sine';
-    osc.frequency.setValueAtTime(380, this.ctx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(140, this.ctx.currentTime + 0.06);
-
-    gain.gain.setValueAtTime(0.35, this.ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.07);
-
+    osc.frequency.setValueAtTime(160, now);
+    osc.frequency.exponentialRampToValueAtTime(60, now + 0.09);
+    gain.gain.setValueAtTime(0.4, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
     osc.connect(gain);
     gain.connect(this.ctx.destination);
-
-    osc.start();
-    osc.stop(this.ctx.currentTime + 0.07);
+    osc.start(now);
+    osc.stop(now + 0.1);
   }
 
-  playHitSound() {
-    if (!this.enabled) return;
-    this.init();
-    if (!this.ctx) return;
-
+  // ヒット（バー送り）時の硬質音
+  playHit() {
+    if (!this.enabled || !this.ctx) return;
+    const now = this.ctx.currentTime;
     const osc = this.ctx.createOscillator();
     const gain = this.ctx.createGain();
-
     osc.type = 'square';
-    osc.frequency.setValueAtTime(180, this.ctx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(40, this.ctx.currentTime + 0.12);
-
-    gain.gain.setValueAtTime(0.4, this.ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.13);
-
+    osc.frequency.setValueAtTime(480, now);
+    osc.frequency.exponentialRampToValueAtTime(140, now + 0.14);
+    gain.gain.setValueAtTime(0.3, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.14);
     osc.connect(gain);
     gain.connect(this.ctx.destination);
-
-    osc.start();
-    osc.stop(this.ctx.currentTime + 0.13);
+    osc.start(now);
+    osc.stop(now + 0.15);
   }
 
-  playBearOffSound() {
-    if (!this.enabled) return;
-    this.init();
-    if (!this.ctx) return;
-
-    const osc = this.ctx.createOscillator();
-    const gain = this.ctx.createGain();
-
-    osc.type = 'triangle';
-    osc.frequency.setValueAtTime(520, this.ctx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(780, this.ctx.currentTime + 0.1);
-
-    gain.gain.setValueAtTime(0.25, this.ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.11);
-
-    osc.connect(gain);
-    gain.connect(this.ctx.destination);
-
-    osc.start();
-    osc.stop(this.ctx.currentTime + 0.12);
-  }
-
-  playFanfare() {
-    if (!this.enabled) return;
-    this.init();
-    if (!this.ctx) return;
-
-    const notes = [440, 554.37, 659.25, 880];
+  // ベアオフ（ゴールアウト）の軽快なチャイム
+  playBearOff() {
+    if (!this.enabled || !this.ctx) return;
+    const now = this.ctx.currentTime;
+    const notes = [523.25, 659.25, 783.99]; // C5, E5, G5
     notes.forEach((freq, idx) => {
-      const delay = idx * 0.1;
       const osc = this.ctx.createOscillator();
       const gain = this.ctx.createGain();
-
-      osc.type = 'triangle';
-      osc.frequency.setValueAtTime(freq, this.ctx.currentTime + delay);
-
-      gain.gain.setValueAtTime(0.25, this.ctx.currentTime + delay);
-      gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + delay + 0.35);
-
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, now + idx * 0.05);
+      gain.gain.setValueAtTime(0.15, now + idx * 0.05);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.05 + 0.2);
       osc.connect(gain);
       gain.connect(this.ctx.destination);
+      osc.start(now + idx * 0.05);
+      osc.stop(now + idx * 0.05 + 0.22);
+    });
+  }
 
-      osc.start(this.ctx.currentTime + delay);
-      osc.stop(this.ctx.currentTime + delay + 0.36);
+  // 勝利ファンファーレ
+  playVictory() {
+    if (!this.enabled || !this.ctx) return;
+    const now = this.ctx.currentTime;
+    const chord = [392.00, 523.25, 659.25, 783.99, 1046.50];
+    chord.forEach((freq, idx) => {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(freq, now + idx * 0.08);
+      gain.gain.setValueAtTime(0.2, now + idx * 0.08);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.08 + 0.5);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start(now + idx * 0.08);
+      osc.stop(now + idx * 0.08 + 0.55);
     });
   }
 }
