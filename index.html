@@ -13,7 +13,7 @@
     <!-- TITLE SCREEN OVERLAY -->
     <div id="title-screen" class="overlay">
       <div class="title-header">
-        <a href="#" class="portal-link" id="portal-btn">‹ Back to Clubhouse</a>
+        <a href="#" class="portal-link" id="portal-btn" data-i18n="portalLink">‹ Back to Clubhouse</a>
         <button id="title-settings-btn" class="icon-btn" aria-label="Settings">⚙️</button>
       </div>
 
@@ -27,16 +27,16 @@
         <div class="config-row">
           <span data-i18n="mode">Game Mode</span>
           <div class="seg-control" id="mode-seg">
-            <button class="seg-btn active" data-val="cpu">vs CPU</button>
-            <button class="seg-btn" data-val="local">Pass &amp; Play</button>
+            <button class="seg-btn active" data-val="cpu" data-i18n="modeCpu">vs CPU</button>
+            <button class="seg-btn" data-val="local" data-i18n="modeLocal">2 Players</button>
           </div>
         </div>
         <div class="config-row" id="difficulty-row">
           <span data-i18n="difficulty">Difficulty</span>
           <div class="seg-control" id="diff-seg">
-            <button class="seg-btn active" data-val="easy">Easy</button>
-            <button class="seg-btn" data-val="normal">Normal</button>
-            <button class="seg-btn" data-val="hard">Hard</button>
+            <button class="seg-btn active" data-val="easy" data-i18n="diffEasy">Easy</button>
+            <button class="seg-btn" data-val="normal" data-i18n="diffNormal">Normal</button>
+            <button class="seg-btn" data-val="hard" data-i18n="diffHard">Hard</button>
           </div>
         </div>
       </div>
@@ -52,7 +52,10 @@
     <!-- MAIN GAME VIEW -->
     <div id="game-view">
       <header class="game-header">
-        <button id="header-back-btn" class="icon-btn" title="Back">‹</button>
+        <button id="header-back-btn" class="back-nav-btn">
+          <span class="back-arrow">‹</span>
+          <span class="back-label" data-i18n="backToTitle">To Title</span>
+        </button>
         <div class="game-title-badge">BACKGAMMON</div>
         <div class="status-bar">
           <div class="pip-box">
@@ -64,7 +67,7 @@
       </header>
 
       <div id="thinking-indicator" class="thinking-bubble" style="display: none;">
-        <span>CPU Thinking</span>
+        <span data-i18n="cpuThinking">CPU Thinking</span>
         <span class="thinking-dots"><span>.</span><span>.</span><span>.</span></span>
       </div>
 
@@ -134,8 +137,8 @@
     <!-- CONFIRMATION / GENERIC MODAL -->
     <div id="confirm-modal" class="overlay hidden">
       <div class="modal-box">
-        <h3 class="modal-title" id="confirm-title">Confirmation</h3>
-        <p class="modal-desc" id="confirm-msg">Are you sure?</p>
+        <h3 class="modal-title" id="confirm-title">Return to Title?</h3>
+        <p class="modal-desc" id="confirm-msg">Your match progress will be saved automatically.</p>
         <div style="display:flex; gap:10px;">
           <button id="confirm-cancel-btn" class="btn-secondary" style="flex:1;" data-i18n="cancel">Cancel</button>
           <button id="confirm-ok-btn" class="btn-primary" style="flex:1;" data-i18n="confirm">OK</button>
@@ -153,7 +156,7 @@
         </div>
         <div class="rules-step">
           <h4 data-i18n="rule2Title">2. Movement &amp; Blots</h4>
-          <p data-i18n="rule2Desc">White moves counter-clockwise (24 -> 1). An isolated single checker is a "blot". Landing on an opponent's blot hits it to the Bar.</p>
+          <p data-i18n="rule2Desc">White moves toward point 1. An isolated checker is a blot; landing on it sends it to the central Bar.</p>
         </div>
         <div class="rules-step">
           <h4 data-i18n="rule3Title">3. Doubles</h4>
