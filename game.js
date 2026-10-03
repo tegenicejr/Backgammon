@@ -197,8 +197,6 @@ class BackgammonGame {
   }
 
   renderBoardSkeleton() {
-    // Top Row: Points 12 to 17 (Outer), Points 18 to 23 (Inner)
-    // Bottom Row: Points 11 down to 6 (Outer), Points 5 down to 0 (Inner)
     const createPt = (idx, isTop) => {
       const pt = document.createElement('div');
       pt.className = `point ${isTop ? 'point-top' : 'point-bottom'} ${idx % 2 === 0 ? 'pt-dark' : 'pt-light'}`;
@@ -227,7 +225,6 @@ class BackgammonGame {
     audio.enabled = this.settings.sound;
     this.dom.audioToggleBtn.textContent = this.settings.sound ? '🔊' : '🔇';
     
-    // Multi-language update
     document.querySelectorAll('[data-i18n]').forEach(el => {
       const key = el.getAttribute('data-i18n');
       if (I18N[this.settings.lang] && I18N[this.settings.lang][key]) {
@@ -258,7 +255,6 @@ class BackgammonGame {
   }
 
   bindEvents() {
-    // Mode toggle
     this.dom.modeSeg.querySelectorAll('.seg-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         this.dom.modeSeg.querySelectorAll('.seg-btn').forEach(b => b.classList.remove('active'));
@@ -269,7 +265,6 @@ class BackgammonGame {
       });
     });
 
-    // Diff toggle
     this.dom.diffSeg.querySelectorAll('.seg-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         this.dom.diffSeg.querySelectorAll('.seg-btn').forEach(b => b.classList.remove('active'));
@@ -279,11 +274,9 @@ class BackgammonGame {
       });
     });
 
-    // Main action buttons
     this.dom.startBtn.addEventListener('click', () => this.startNewMatchFlow());
     this.dom.resumeBtn.addEventListener('click', () => this.resumeSavedGame());
     
-    // Dialog triggers
     this.dom.rulesBtn.addEventListener('click', () => this.openOverlay(this.dom.rulesModal));
     this.dom.rulesCloseBtn.addEventListener('click', () => this.closeOverlay(this.dom.rulesModal));
     this.dom.statsBtn.addEventListener('click', () => this.showStats());
@@ -291,7 +284,6 @@ class BackgammonGame {
     this.dom.titleSettingsBtn.addEventListener('click', () => this.openOverlay(this.dom.settingsModal));
     this.dom.settingsCloseBtn.addEventListener('click', () => this.closeOverlay(this.dom.settingsModal));
     
-    // Header Actions
     this.dom.headerBackBtn.addEventListener('click', () => {
       const curLang = I18N[this.settings.lang];
       this.confirmDialog(curLang.confirmLeaveTitle, curLang.confirmLeaveDesc, () => {
@@ -310,7 +302,6 @@ class BackgammonGame {
 
     this.dom.rollActionBtn.addEventListener('click', () => this.handleRollBtnClick());
 
-    // Settings listeners
     document.getElementById('lang-seg').querySelectorAll('.seg-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         this.settings.lang = btn.dataset.lang;
@@ -346,7 +337,6 @@ class BackgammonGame {
       });
     });
 
-    // Board Interactive delegated listeners
     this.dom.gameView.addEventListener('click', (e) => this.handleBoardInteraction(e));
   }
 
@@ -397,7 +387,6 @@ class BackgammonGame {
     this.openOverlay(this.dom.statsModal);
   }
 
-  // --- STANDARD DICE DOM BUILDER ---
   createDiceElement(val, isUsed = false) {
     const dice = document.createElement('div');
     dice.className = `dice dice-${val} ${isUsed ? 'used' : ''}`;
@@ -415,7 +404,6 @@ class BackgammonGame {
     return dice;
   }
 
-  // --- 3-STEP INITIATIVE SEQUENCE ---
   startNewMatchFlow() {
     this.dom.initOppLabel.textContent = this.mode === 'cpu' 
       ? I18N[this.settings.lang].oppCpu 
@@ -428,7 +416,7 @@ class BackgammonGame {
     
     this.openOverlay(this.dom.initiativeModal);
 
-    let stage = 'roll'; // 'roll' | 'confirm'
+    let stage = 'roll';
     let firstRollResult = null;
 
     this.dom.initActionBtn.onclick = () => {
@@ -533,7 +521,6 @@ class BackgammonGame {
     });
   }
 
-  // --- GAMEPLAY CORE ENGINE ---
   handleRollBtnClick() {
     if (this.isRolling || this.availableMoves.length > 0) return;
     audio.playDiceRoll();
@@ -580,22 +567,18 @@ class BackgammonGame {
   }
 
   updateControls() {
-    // Pip Count
     this.dom.whitePip.textContent = this.calcPip('white');
     this.dom.blackPip.textContent = this.calcPip('black');
 
-    // Turn indicator
     this.dom.turnCheckerDisc.className = `checker checker-${this.turn}`;
     this.dom.turnText.textContent = this.turn === 'white' 
       ? I18N[this.settings.lang].whiteTurnText 
       : I18N[this.settings.lang].blackTurnText;
 
-    // Roll button state
     const isPlayerTurn = (this.turn === 'white' || this.mode === 'local');
     const canRoll = isPlayerTurn && this.availableMoves.length === 0;
     this.dom.rollActionBtn.style.display = canRoll ? 'inline-block' : 'none';
 
-    // Dices Render
     this.dom.diceDisplay.innerHTML = '';
     this.dice.forEach(d => {
       const isUsed = !this.availableMoves.includes(d);
@@ -636,7 +619,6 @@ class BackgammonGame {
     }
   }
 
-  // --- VALID MOVES ENGINE ---
   getAllValidMoves(player, diceList) {
     const uniqueDice = [...new Set(diceList)];
     const validMoves = [];
@@ -795,7 +777,6 @@ class BackgammonGame {
     return false;
   }
 
-  // --- USER INTERACTION ---
   handleBoardInteraction(e) {
     if (this.turn === 'black' && this.mode === 'cpu') return;
     if (this.availableMoves.length === 0) return;
@@ -891,7 +872,6 @@ class BackgammonGame {
     }
   }
 
-  // --- CPU OPPONENT WITH THINKING WAIT ---
   triggerCpuTurn() {
     if (this.availableMoves.length === 0) {
       this.dom.thinkingIndicator.style.display = 'flex';
@@ -950,7 +930,7 @@ class BackgammonGame {
     }
   }
 
-  // --- BOARD RENDERING ---
+  // --- BOARD RENDERING (6個以上の真ん中数字バッジ対応) ---
   renderBoard() {
     document.querySelectorAll('.legal-target').forEach(el => el.classList.remove('legal-target'));
 
@@ -973,6 +953,7 @@ class BackgammonGame {
         if (this.selectedSource === i && k === limit - 1) {
           checker.classList.add('selected');
         }
+        // 6個以上のスタックの場合、先頭（一番手前）の駒の真ん中に総数を表示
         if (k === limit - 1 && total > 5) {
           const badge = document.createElement('span');
           badge.className = 'checker-count';
@@ -989,17 +970,34 @@ class BackgammonGame {
 
   renderBarPockets() {
     this.dom.barWhite.innerHTML = '';
-    for (let i = 0; i < Math.min(this.bar.white, 4); i++) {
+    const wTotal = this.bar.white;
+    const wLimit = Math.min(wTotal, 4);
+    for (let i = 0; i < wLimit; i++) {
       const ch = document.createElement('div');
       ch.className = 'checker checker-white';
       if (this.selectedSource === 'bar' && this.turn === 'white') ch.classList.add('selected');
+      if (i === wLimit - 1 && wTotal > 4) {
+        const badge = document.createElement('span');
+        badge.className = 'checker-count';
+        badge.textContent = wTotal;
+        ch.appendChild(badge);
+      }
       this.dom.barWhite.appendChild(ch);
     }
+
     this.dom.barBlack.innerHTML = '';
-    for (let i = 0; i < Math.min(this.bar.black, 4); i++) {
+    const bTotal = this.bar.black;
+    const bLimit = Math.min(bTotal, 4);
+    for (let i = 0; i < bLimit; i++) {
       const ch = document.createElement('div');
       ch.className = 'checker checker-black';
       if (this.selectedSource === 'bar' && this.turn === 'black') ch.classList.add('selected');
+      if (i === bLimit - 1 && bTotal > 4) {
+        const badge = document.createElement('span');
+        badge.className = 'checker-count';
+        badge.textContent = bTotal;
+        ch.appendChild(badge);
+      }
       this.dom.barBlack.appendChild(ch);
     }
   }
