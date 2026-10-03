@@ -24,66 +24,53 @@
         <div class="title-emblem-wrap">
           <svg class="title-symbol-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
             <defs>
-              <!-- 盤面フェルトグラデーション -->
               <radialGradient id="emblemBg" cx="50%" cy="50%" r="50%">
                 <stop offset="0%" stop-color="#1e4e32"/>
                 <stop offset="70%" stop-color="#143521"/>
                 <stop offset="100%" stop-color="#0a1c11"/>
               </radialGradient>
-              <!-- 真鍮リムグラデーション -->
               <linearGradient id="brassBorder" x1="0%" y1="0%" x2="100%" y2="100%">
                 <stop offset="0%" stop-color="#fff2b2"/>
                 <stop offset="35%" stop-color="#d4af37"/>
                 <stop offset="70%" stop-color="#8a671c"/>
                 <stop offset="100%" stop-color="#e8ca74"/>
               </linearGradient>
-              <!-- 白（象牙）駒グラデーション -->
               <radialGradient id="ivoryShade" cx="35%" cy="30%" r="70%">
                 <stop offset="0%" stop-color="#ffffff"/>
                 <stop offset="65%" stop-color="#eee6d3"/>
                 <stop offset="100%" stop-color="#b8aa88"/>
               </radialGradient>
-              <!-- 黒（漆黒）駒グラデーション -->
               <radialGradient id="onyxShade" cx="35%" cy="30%" r="70%">
                 <stop offset="0%" stop-color="#464a52"/>
                 <stop offset="60%" stop-color="#1c1e22"/>
                 <stop offset="100%" stop-color="#08090a"/>
               </radialGradient>
-              <!-- 駒ドロップシャドウ -->
               <filter id="checkerShadow" x="-30%" y="-30%" width="160%" height="160%">
                 <feDropShadow dx="0" dy="6" stdDeviation="5" flood-color="#000000" flood-opacity="0.65"/>
               </filter>
             </defs>
 
-            <!-- 外枠：八角形風の真鍮ベゼルプレート -->
             <rect x="10" y="10" width="180" height="180" rx="40" fill="url(#emblemBg)" stroke="url(#brassBorder)" stroke-width="4"/>
             <rect x="18" y="18" width="164" height="164" rx="32" fill="none" stroke="rgba(212,175,55,0.3)" stroke-width="1.5"/>
 
-            <!-- 上下対向の三角ポイント（クリムゾン & アイボリー） -->
-            <!-- 上側三角 -->
             <polygon points="40,20 62,92 18,92" fill="#8c1e17" opacity="0.95"/>
             <polygon points="80,20 102,92 58,92" fill="#dfd1b3" opacity="0.95"/>
             <polygon points="120,20 142,92 98,92" fill="#8c1e17" opacity="0.95"/>
             <polygon points="160,20 182,92 138,92" fill="#dfd1b3" opacity="0.95"/>
 
-            <!-- 下側三角 -->
             <polygon points="40,180 62,108 18,108" fill="#dfd1b3" opacity="0.95"/>
             <polygon points="80,180 102,108 58,108" fill="#8c1e17" opacity="0.95"/>
             <polygon points="120,180 142,108 98,108" fill="#dfd1b3" opacity="0.95"/>
             <polygon points="160,180 182,108 138,108" fill="#8c1e17" opacity="0.95"/>
 
-            <!-- 中央の仕切りバーのニュアンス -->
             <line x1="100" y1="20" x2="100" y2="180" stroke="#2d1408" stroke-width="6" opacity="0.6"/>
 
-            <!-- バックギャモン象徴：2色の対峙する立体駒（チェッカー） -->
-            <!-- 黒（漆黒）チェッカー（左） -->
             <g filter="url(#checkerShadow)">
               <circle cx="76" cy="100" r="30" fill="url(#onyxShade)" stroke="#4a4d53" stroke-width="2"/>
               <circle cx="76" cy="100" r="21" fill="none" stroke="rgba(255,255,255,0.22)" stroke-width="1.5"/>
               <circle cx="76" cy="100" r="10" fill="none" stroke="rgba(212,175,55,0.4)" stroke-width="1"/>
             </g>
 
-            <!-- 白（象牙）チェッカー（右・手前に重なる） -->
             <g filter="url(#checkerShadow)">
               <circle cx="124" cy="100" r="30" fill="url(#ivoryShade)" stroke="#b8ab8b" stroke-width="2"/>
               <circle cx="124" cy="100" r="21" fill="none" stroke="rgba(138,120,90,0.45)" stroke-width="1.5"/>
@@ -127,26 +114,34 @@
       <header class="game-header">
         <button id="header-back-btn" class="back-nav-btn">
           <span class="back-arrow">‹</span>
-          <span class="back-label" data-i18n="backToTitle">To Title</span>
+          <span class="back-label" data-i18n="backToTitle">Title</span>
         </button>
         <div class="game-title-badge">BACKGAMMON</div>
         <div class="status-bar">
-          <div class="pip-box">
-            <span>⚪ <b id="white-pip">167</b></span>
-            <span>⚫ <b id="black-pip">167</b></span>
-          </div>
           <button id="audio-toggle-btn" class="icon-btn">🔊</button>
         </div>
       </header>
+
+      <!-- 相手（Top Player / CPU）情報バー -->
+      <div class="player-strip opponent-strip">
+        <div class="player-profile">
+          <span class="checker checker-black" style="width:24px;height:24px;margin:0;"></span>
+          <span class="player-name" id="opponent-name-label">Black (CPU)</span>
+        </div>
+        <div class="player-pip-badge">
+          <span>PIP:</span> <b id="black-pip">167</b>
+        </div>
+      </div>
 
       <div id="thinking-indicator" class="thinking-bubble" style="display: none;">
         <span data-i18n="cpuThinking">CPU Thinking</span>
         <span class="thinking-dots"><span>.</span><span>.</span><span>.</span></span>
       </div>
 
+      <!-- メインボード（中央） -->
       <main class="board-arena">
         <div class="board-frame">
-          <!-- Outer Board (Points 12-17 top, 11-6 bottom from white perspective) -->
+          <!-- Outer Board -->
           <div class="board-half outer-half">
             <div class="points-row top-row" id="quad-outer-top"></div>
             <div class="points-row bottom-row" id="quad-outer-bottom"></div>
@@ -158,7 +153,7 @@
             <div class="bar-well" id="bar-white"></div>
           </div>
 
-          <!-- Home/Inner Board (Points 18-23 top, 5-0 bottom) -->
+          <!-- Home/Inner Board -->
           <div class="board-half inner-half">
             <div class="points-row top-row" id="quad-inner-top"></div>
             <div class="points-row bottom-row" id="quad-inner-bottom"></div>
@@ -172,15 +167,23 @@
         </div>
       </main>
 
+      <!-- 自分（Bottom Player）情報バー ＆ 操作コントロール -->
       <footer class="control-console">
-        <div class="player-info-area">
-          <div class="turn-badge" id="turn-indicator">
-            <span id="turn-checker-disc" class="checker checker-white" style="width:20px;height:20px;margin:0;"></span>
-            <span id="turn-text">White's Turn</span>
+        <div class="player-bottom-header">
+          <div class="player-profile">
+            <span class="checker checker-white" style="width:24px;height:24px;margin:0;"></span>
+            <span class="player-name" id="my-name-label" data-i18n="youWhite">White (You)</span>
+          </div>
+          <div class="player-pip-badge">
+            <span>PIP:</span> <b id="white-pip">167</b>
           </div>
         </div>
-        <div class="dice-container" id="dice-display"></div>
-        <button id="roll-action-btn" class="btn-primary" style="width: auto; padding: 10px 20px;" data-i18n="roll">Roll</button>
+
+        <div class="player-action-row">
+          <div class="turn-status-text" id="turn-text">White's Turn</div>
+          <div class="dice-container" id="dice-display"></div>
+          <button id="roll-action-btn" class="btn-primary roll-btn" data-i18n="roll">Roll</button>
+        </div>
       </footer>
     </div>
 
