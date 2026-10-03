@@ -77,7 +77,7 @@ const I18N = {
     diffNormal: "中級",
     diffHard: "上級",
     resume: "つづきから",
-    start: "対局開始",
+    start: "対戦開始",
     howToPlay: "あそびかた",
     records: "戦績・やりこみ",
     backToTitle: "タイトルへ",
