@@ -18,7 +18,7 @@ const I18N = {
     start: "Play Game",
     howToPlay: "How to Play",
     records: "Records & Stats",
-    backToTitle: "To Title",
+    backToTitle: "Title",
     cpuThinking: "CPU Thinking",
     roll: "Roll",
     initiativeTitle: "First Move Roll",
@@ -71,7 +71,7 @@ const I18N = {
     start: "対局開始",
     howToPlay: "あそびかた",
     records: "戦績・やりこみ",
-    backToTitle: "タイトルに戻る",
+    backToTitle: "タイトルへ",
     cpuThinking: "CPU考え中",
     roll: "振る",
     initiativeTitle: "先攻・後攻の決定",
@@ -120,9 +120,6 @@ class BackgammonGame {
     this.mode = 'cpu'; // 'cpu' | 'local'
     this.diff = 'easy'; // 'easy' | 'normal' | 'hard'
     
-    // Board Representation: 0 to 23 points.
-    // White moves 23 -> 0. Black moves 0 -> 23.
-    // Positive numbers: White count. Negative numbers: Black count.
     this.points = new Array(24).fill(0);
     this.bar = { white: 0, black: 0 };
     this.bearOff = { white: 0, black: 0 };
@@ -158,7 +155,8 @@ class BackgammonGame {
       rollActionBtn: document.getElementById('roll-action-btn'),
       diceDisplay: document.getElementById('dice-display'),
       turnText: document.getElementById('turn-text'),
-      turnCheckerDisc: document.getElementById('turn-checker-disc'),
+      opponentNameLabel: document.getElementById('opponent-name-label'),
+      myNameLabel: document.getElementById('my-name-label'),
       whitePip: document.getElementById('white-pip'),
       blackPip: document.getElementById('black-pip'),
       thinkingIndicator: document.getElementById('thinking-indicator'),
@@ -570,10 +568,16 @@ class BackgammonGame {
     this.dom.whitePip.textContent = this.calcPip('white');
     this.dom.blackPip.textContent = this.calcPip('black');
 
-    this.dom.turnCheckerDisc.className = `checker checker-${this.turn}`;
+    // Update Opponent Name Label based on Mode
+    this.dom.opponentNameLabel.textContent = this.mode === 'cpu'
+      ? I18N[this.settings.lang].oppCpu
+      : I18N[this.settings.lang].oppPlayer;
+
+    // Turn banner update
     this.dom.turnText.textContent = this.turn === 'white' 
       ? I18N[this.settings.lang].whiteTurnText 
       : I18N[this.settings.lang].blackTurnText;
+    this.dom.turnText.className = `turn-status-text ${this.turn}-turn`;
 
     const isPlayerTurn = (this.turn === 'white' || this.mode === 'local');
     const canRoll = isPlayerTurn && this.availableMoves.length === 0;
@@ -930,7 +934,7 @@ class BackgammonGame {
     }
   }
 
-  // --- BOARD RENDERING (6個以上の真ん中数字バッジ対応) ---
+  // --- BOARD RENDERING ---
   renderBoard() {
     document.querySelectorAll('.legal-target').forEach(el => el.classList.remove('legal-target'));
 
@@ -953,7 +957,6 @@ class BackgammonGame {
         if (this.selectedSource === i && k === limit - 1) {
           checker.classList.add('selected');
         }
-        // 6個以上のスタックの場合、先頭（一番手前）の駒の真ん中に総数を表示
         if (k === limit - 1 && total > 5) {
           const badge = document.createElement('span');
           badge.className = 'checker-count';
