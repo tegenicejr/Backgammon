@@ -211,9 +211,34 @@ button {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 14px;
+  padding: 0 12px;
   background: rgba(0,0,0,0.5);
   border-bottom: 2px solid #3d1c0b;
+}
+
+/* Back button with text */
+.back-nav-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  border-radius: 6px;
+  color: #eeddbb;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 10px 5px 6px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.back-nav-btn:active {
+  background: rgba(212, 175, 55, 0.2);
+}
+
+.back-arrow {
+  font-size: 1.15rem;
+  line-height: 1;
+  color: var(--brass);
 }
 
 .icon-btn {
@@ -225,7 +250,7 @@ button {
 }
 
 .game-title-badge {
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 800;
   letter-spacing: 2px;
   color: var(--brass-light);
@@ -234,7 +259,7 @@ button {
 .status-bar {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   font-size: 0.85rem;
 }
 
@@ -614,7 +639,7 @@ button {
   40% { opacity: 1; }
 }
 
-/* Initiative 3-Step Modal */
+/* Modal Boxes */
 .modal-box {
   background: #201007;
   border: 2px solid var(--brass);
@@ -659,7 +684,6 @@ button {
   font-weight: 700;
 }
 
-/* Rules / Settings Modals */
 .rules-step {
   text-align: left;
   background: rgba(0,0,0,0.3);
