@@ -272,15 +272,20 @@ button {
   color: var(--brass-light);
 }
 
-/* Player Strips (Mobile Vertical Layout) */
+/* Player Strips (Top & Bottom: Exact Symmetry) */
 .player-strip {
+  padding: 8px 14px;
+  background: rgba(0,0,0,0.45);
+  border-bottom: 1px solid rgba(212,175,55,0.2);
+  flex-shrink: 0;
+}
+
+.player-top-header,
+.player-bottom-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 16px;
-  background: rgba(0,0,0,0.4);
-  border-bottom: 1px solid rgba(212,175,55,0.2);
-  flex-shrink: 0;
+  width: 100%;
 }
 
 .player-profile {
@@ -318,7 +323,7 @@ button {
   flex-direction: column;
   padding: 6px;
   position: relative;
-  min-height: 0; /* flex container overflow prevention */
+  min-height: 0;
 }
 
 .board-frame {
@@ -482,7 +487,7 @@ button {
   box-shadow: inset 0 0 10px rgba(255,215,0,0.4);
 }
 
-/* Checker Stack & Sizing (Responsive across Mobile & Desktop) */
+/* Checker Stack & 完全均等スタック配置 */
 .checker-stack {
   position: absolute;
   top: 0;
@@ -498,15 +503,21 @@ button {
   overflow: visible;
 }
 
-.point-top .checker-stack { justify-content: flex-start; }
-.point-bottom .checker-stack { justify-content: flex-end; }
+/* 上段は上から順、下段は下から順に完全に逆順で積み重ねる */
+.point-top .checker-stack {
+  justify-content: flex-start;
+}
+
+.point-bottom .checker-stack {
+  justify-content: flex-start;
+  flex-direction: column-reverse; /* 下端を1個目として上へ等間隔にスタック */
+}
 
 .checker {
   width: 26px;
   height: 26px;
   border-radius: 50%;
   position: relative;
-  margin-top: -6px;
   pointer-events: auto;
   cursor: pointer;
   touch-action: manipulation;
@@ -518,9 +529,14 @@ button {
   z-index: 12;
 }
 
-.point-top .checker:first-child,
-.point-bottom .checker:last-child {
-  margin-top: 0;
+/* 上段：2個目以降は上方向に少し重ねる */
+.point-top .checker:not(:first-child) {
+  margin-top: -6px;
+}
+
+/* 下段：2個目以降（上へ伸びる駒）も均等に重ねる（ズレの完全解消） */
+.point-bottom .checker:not(:first-child) {
+  margin-bottom: -6px;
 }
 
 .checker-white {
@@ -612,12 +628,6 @@ button {
   border-top: 2px solid #3d1c0b;
   flex-shrink: 0;
   gap: 6px;
-}
-
-.player-bottom-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
 }
 
 .player-action-row {
@@ -844,7 +854,14 @@ button {
   .checker {
     width: 32px;
     height: 32px;
+  }
+
+  .point-top .checker:not(:first-child) {
     margin-top: -8px;
+  }
+
+  .point-bottom .checker:not(:first-child) {
+    margin-bottom: -8px;
   }
 
   .checker-white::after, .checker-black::after {
@@ -878,6 +895,7 @@ button {
   }
 
   .player-bottom-header {
+    width: auto;
     gap: 16px;
   }
 
