@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Backgammon - Games Clubhouse</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app" class="app-container">
+
+    <!-- 1. タイトル / スタート画面 -->
+    <section id="title-screen" class="screen title-screen">
+      <header class="title-header">
+        <a href="../index.html" class="btn-clubhouse" id="btn-back-clubhouse">‹ Back to Clubhouse</a>
+      </header>
+
+      <div class="title-content">
+        <div class="symbol-container">
+          <svg class="symbol-svg" viewBox="0 0 120 120">
+            <defs>
+              <radialGradient id="checker-gold" cx="35%" cy="35%" r="65%">
+                <stop offset="0%" stop-color="#fff8db"/>
+                <stop offset="50%" stop-color="#d4af37"/>
+                <stop offset="100%" stop-color="#8c6d1f"/>
+              </radialGradient>
+              <radialGradient id="checker-dark" cx="35%" cy="35%" r="65%">
+                <stop offset="0%" stop-color="#555"/>
+                <stop offset="60%" stop-color="#222"/>
+                <stop offset="100%" stop-color="#050505"/>
+              </radialGradient>
+              <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+                <feDropShadow dx="2" dy="4" stdDeviation="3" flood-opacity="0.5"/>
+              </filter>
+            </defs>
+            <circle cx="45" cy="65" r="32" fill="url(#checker-dark)" filter="url(#shadow)" stroke="#444" stroke-width="2"/>
+            <circle cx="75" cy="55" r="32" fill="url(#checker-gold)" filter="url(#shadow)" stroke="#f5e6a2" stroke-width="2"/>
+            <rect x="52" y="32" width="26" height="26" rx="5" fill="#fff" filter="url(#shadow)"/>
+            <circle cx="65" cy="45" r="3" fill="#c0392b"/>
+          </svg>
+        </div>
+
+        <h1 class="game-title" data-i18n="title">BACKGAMMON</h1>
+        <p class="game-subtitle" data-i18n="subtitle">Classic Strategy & Skill</p>
+
+        <!-- 設定選択ボックス -->
+        <div class="mode-selection-panel">
+          <div class="setting-row">
+            <span class="setting-label" data-i18n="modeLabel">Mode</span>
+            <div class="segmented-control" id="mode-selector">
+              <button type="button" class="segment-btn active" data-mode="cpu" data-i18n="modeCpu">vs CPU</button>
+              <button type="button" class="segment-btn" data-mode="pass" data-i18n="modePass">Pass & Play</button>
+            </div>
+          </div>
+
+          <div class="setting-row" id="cpu-diff-row">
+            <span class="setting-label" data-i18n="diffLabel">CPU Level</span>
+            <div class="segmented-control" id="diff-selector">
+              <button type="button" class="segment-btn" data-diff="easy" data-i18n="diffEasy">Easy</button>
+              <button type="button" class="segment-btn active" data-diff="normal" data-i18n="diffNormal">Normal</button>
+              <button type="button" class="segment-btn" data-diff="hard" data-i18n="diffHard">Hard</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- アクションボタン群 -->
+        <div class="title-actions">
+          <button type="button" id="btn-resume-game" class="btn btn-primary btn-large hidden" data-i18n="resumeGame">Resume Game</button>
+          <button type="button" id="btn-start-game" class="btn btn-accent btn-large" data-i18n="startGame">Start New Game</button>
+          <div class="action-grid">
+            <button type="button" id="btn-open-rules" class="btn btn-secondary" data-i18n="howToPlay">How to Play</button>
+            <button type="button" id="btn-open-stats" class="btn btn-secondary" data-i18n="stats">Stats</button>
+            <button type="button" id="btn-open-settings" class="btn btn-secondary" data-i18n="settings">⚙️ Settings</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. メインゲーム画面 -->
+    <section id="game-screen" class="screen game-screen hidden">
+      <header class="game-header">
+        <button type="button" id="btn-to-title" class="btn-header-back" data-i18n="toTitle">‹ Title</button>
+        <div class="header-status">
+          <div class="pip-counter pip-black">
+            <span class="pip-dot black"></span>
+            <span class="pip-label" data-i18n="black">Black</span>: <strong id="pip-black-val">167</strong>
+          </div>
+          <div class="pip-counter pip-white">
+            <span class="pip-dot white"></span>
+            <span class="pip-label" data-i18n="white">White</span>: <strong id="pip-white-val">167</strong>
+          </div>
+        </div>
+        <div class="header-tools">
+          <button type="button" id="btn-audio-toggle" class="btn-icon">🔊</button>
+          <button type="button" id="btn-ingame-settings" class="btn-icon">⚙️</button>
+        </div>
+      </header>
+
+      <!-- ターン/状況トースト -->
+      <div class="turn-banner" id="turn-banner">
+        <span id="turn-text">Roll to start</span>
+        <span id="cpu-thinking-pill" class="thinking-pill hidden" data-i18n="thinking">Thinking...</span>
+      </div>
+
+      <!-- バックギャモン盤面エリア -->
+      <main class="board-wrapper">
+        <div class="backgammon-board" id="backgammon-board">
+          <!-- 上部ポイント（外側・内側）: 13〜24 -->
+          <div class="points-row top-row" id="top-row">
+            <div class="board-quadrant left-quadrant" id="quad-top-left"></div>
+            <div class="board-bar-divider"></div>
+            <div class="board-quadrant right-quadrant" id="quad-top-right"></div>
+          </div>
+
+          <!-- 中央バーエリア -->
+          <div class="board-bar-center" id="board-bar">
+            <div class="bar-slot" id="bar-black"></div>
+            <div class="bar-dice-area" id="dice-container">
+              <!-- ダイスはJSで動的生成 -->
+            </div>
+            <div class="bar-slot" id="bar-white"></div>
+          </div>
+
+          <!-- 下部ポイント（外側・内側）: 12〜1 -->
+          <div class="points-row bottom-row" id="bottom-row">
+            <div class="board-quadrant left-quadrant" id="quad-bottom-left"></div>
+            <div class="board-bar-divider"></div>
+            <div class="board-quadrant right-quadrant" id="quad-bottom-right"></div>
+          </div>
+
+          <!-- 右サイド: ベアオフトレイ（上がり駒置き場） -->
+          <aside class="bearoff-tray">
+            <div class="tray-slot" id="tray-black" title="Black Bearoff">
+              <span class="tray-label">BLK</span>
+              <div class="tray-stack" id="stack-black-off"></div>
+            </div>
+            <div class="tray-slot" id="tray-white" title="White Bearoff">
+              <span class="tray-label">WHT</span>
+              <div class="tray-stack" id="stack-white-off"></div>
+            </div>
+          </aside>
+        </div>
+      </main>
+
+      <!-- フッター操作バー -->
+      <footer class="game-footer">
+        <button type="button" id="btn-roll-dice" class="btn btn-accent btn-roll" data-i18n="rollDice">🎲 ROLL DICE</button>
+        <button type="button" id="btn-confirm-endturn" class="btn btn-secondary btn-endturn hidden" data-i18n="endTurn">Done</button>
+      </footer>
+    </section>
+
+    <!-- モーダル: 設定 -->
+    <div id="modal-settings" class="modal-backdrop hidden">
+      <div class="modal-card">
+        <h2 class="modal-title" data-i18n="settingsTitle">Settings</h2>
+        <div class="modal-body">
+          <div class="setting-item">
+            <span data-i18n="langSetting">Language</span>
+            <div class="segmented-control" id="setting-lang">
+              <button type="button" class="segment-btn" data-lang="en">English</button>
+              <button type="button" class="segment-btn" data-lang="ja">日本語</button>
+            </div>
+          </div>
+          <div class="setting-item">
+            <span data-i18n="soundSetting">Sound Effects</span>
+            <input type="checkbox" id="setting-sound" class="toggle-switch" checked>
+          </div>
+          <div class="setting-item">
+            <span data-i18n="hapticsSetting">Haptics (Vibration)</span>
+            <input type="checkbox" id="setting-haptics" class="toggle-switch" checked>
+          </div>
+          <div class="setting-item">
+            <span data-i18n="speedSetting">Animation Speed</span>
+            <div class="segmented-control" id="setting-speed">
+              <button type="button" class="segment-btn" data-speed="normal" data-i18n="speedNormal">Normal</button>
+              <button type="button" class="segment-btn" data-speed="fast" data-i18n="speedFast">Fast</button>
+            </div>
+          </div>
+          <div class="setting-danger-zone">
+            <button type="button" id="btn-reset-data" class="btn btn-danger" data-i18n="resetData">Reset All Data</button>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-primary modal-close" data-i18n="close">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- モーダル: ルール・あそびかた -->
+    <div id="modal-rules" class="modal-backdrop hidden">
+      <div class="modal-card modal-large">
+        <h2 class="modal-title" data-i18n="rulesTitle">How to Play Backgammon</h2>
+        <div class="modal-body rules-body">
+          <div class="rule-step">
+            <div class="rule-icon">🎯</div>
+            <div class="rule-desc">
+              <h3 data-i18n="rule1Title">Objective</h3>
+              <p data-i18n="rule1Desc">Move all 15 checkers into your home board and bear them off the board before your opponent.</p>
+            </div>
+          </div>
+          <div class="rule-step">
+            <div class="rule-icon">🔄</div>
+            <div class="rule-desc">
+              <h3 data-i18n="rule2Title">Movement</h3>
+              <p data-i18n="rule2Desc">White moves counter-clockwise toward point 1. Black moves clockwise toward point 24. Doubles give 4 moves!</p>
+            </div>
+          </div>
+          <div class="rule-step">
+            <div class="rule-icon">⚔️</div>
+            <div class="rule-desc">
+              <h3 data-i18n="rule3Title">Hitting & The Bar</h3>
+              <p data-i18n="rule3Desc">Landing on a single enemy checker (a blot) sends it to the central Bar. Checkers on the bar must re-enter first!</p>
+            </div>
+          </div>
+          <div class="rule-step">
+            <div class="rule-icon">🏁</div>
+            <div class="rule-desc">
+              <h3 data-i18n="rule4Title">Bearing Off</h3>
+              <p data-i18n="rule4Desc">Once all 15 checkers are in your inner home quadrant, you can roll the dice to remove them to the right-side tray.</p>
+            </div>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-primary modal-close" data-i18n="close">Got It!</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- モーダル: 戦績・統計 -->
+    <div id="modal-stats" class="modal-backdrop hidden">
+      <div class="modal-card">
+        <h2 class="modal-title" data-i18n="statsTitle">Match Records</h2>
+        <div class="modal-body stats-grid">
+          <div class="stat-box">
+            <div class="stat-number" id="stat-matches">0</div>
+            <div class="stat-name" data-i18n="statMatches">Matches Played</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-number" id="stat-wins">0</div>
+            <div class="stat-name" data-i18n="statWins">Wins</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-number" id="stat-winrate">0%</div>
+            <div class="stat-name" data-i18n="statWinrate">Win Rate</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-number" id="stat-gammons">0</div>
+            <div class="stat-name" data-i18n="statGammons">Gammon Wins</div>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-primary modal-close" data-i18n="close">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- モーダル: 確認ダイアログ（戻る/ギブアップ時） -->
+    <div id="modal-confirm" class="modal-backdrop hidden">
+      <div class="modal-card">
+        <h2 class="modal-title" id="confirm-title">Confirmation</h2>
+        <p class="modal-text" id="confirm-message">Are you sure you want to quit this match?</p>
+        <div class="modal-actions confirm-actions">
+          <button type="button" id="confirm-cancel" class="btn btn-secondary" data-i18n="cancel">Cancel</button>
+          <button type="button" id="confirm-ok" class="btn btn-danger" data-i18n="confirm">Leave</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- モーダル: 勝敗リザルト -->
+    <div id="modal-result" class="modal-backdrop hidden">
+      <div class="modal-card result-card">
+        <div class="result-trophy" id="result-icon">🏆</div>
+        <h2 class="result-title" id="result-winner">White Wins!</h2>
+        <p class="result-subtitle" id="result-type">Single Victory</p>
+        <div class="modal-actions result-actions">
+          <button type="button" id="btn-share-x" class="btn btn-accent" data-i18n="shareX">Share on 𝕏</button>
+          <button type="button" id="btn-play-again" class="btn btn-primary" data-i18n="playAgain">Play Again</button>
+          <button type="button" id="btn-result-title" class="btn btn-secondary" data-i18n="toTitle">Title Menu</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="storage.js"></script>
+  <script src="audio.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>
