@@ -20,61 +20,46 @@
       </div>
 
       <div class="title-center">
-        <!-- バックギャモンの象徴：三角ポイントと2色の立体駒（純粋SVGシンボル） -->
+        <!-- アプリアイコン枠を撤廃：盤面の三角ポイントと2色の立体駒が直接融合したエレガントなシンボル -->
         <div class="title-emblem-wrap">
-          <svg class="title-symbol-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+          <svg class="title-symbol-svg" viewBox="0 0 240 160" xmlns="http://www.w3.org/2000/svg">
             <defs>
-              <radialGradient id="emblemBg" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stop-color="#1e4e32"/>
-                <stop offset="70%" stop-color="#143521"/>
-                <stop offset="100%" stop-color="#0a1c11"/>
-              </radialGradient>
-              <linearGradient id="brassBorder" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#fff2b2"/>
-                <stop offset="35%" stop-color="#d4af37"/>
-                <stop offset="70%" stop-color="#8a671c"/>
-                <stop offset="100%" stop-color="#e8ca74"/>
-              </linearGradient>
-              <radialGradient id="ivoryShade" cx="35%" cy="30%" r="70%">
+              <radialGradient id="ivoryChecker" cx="35%" cy="30%" r="70%">
                 <stop offset="0%" stop-color="#ffffff"/>
-                <stop offset="65%" stop-color="#eee6d3"/>
-                <stop offset="100%" stop-color="#b8aa88"/>
+                <stop offset="65%" stop-color="#eee8d8"/>
+                <stop offset="100%" stop-color="#c8bea3"/>
               </radialGradient>
-              <radialGradient id="onyxShade" cx="35%" cy="30%" r="70%">
+              <radialGradient id="onyxChecker" cx="35%" cy="30%" r="70%">
                 <stop offset="0%" stop-color="#464a52"/>
-                <stop offset="60%" stop-color="#1c1e22"/>
-                <stop offset="100%" stop-color="#08090a"/>
+                <stop offset="65%" stop-color="#1e2024"/>
+                <stop offset="100%" stop-color="#090a0c"/>
               </radialGradient>
-              <filter id="checkerShadow" x="-30%" y="-30%" width="160%" height="160%">
-                <feDropShadow dx="0" dy="6" stdDeviation="5" flood-color="#000000" flood-opacity="0.65"/>
+              <filter id="symbolShadow" x="-20%" y="-20%" width="140%" height="140%">
+                <feDropShadow dx="0" dy="6" stdDeviation="5" flood-color="#000000" flood-opacity="0.75"/>
               </filter>
             </defs>
 
-            <rect x="10" y="10" width="180" height="180" rx="40" fill="url(#emblemBg)" stroke="url(#brassBorder)" stroke-width="4"/>
-            <rect x="18" y="18" width="164" height="164" rx="32" fill="none" stroke="rgba(212,175,55,0.3)" stroke-width="1.5"/>
+            <!-- 背景に広がる連続した三角ポイント（フェルト盤面のモチーフ） -->
+            <polygon points="20,10 44,110 0,110" fill="#8c1e17" opacity="0.65"/>
+            <polygon points="60,10 84,110 36,110" fill="#dfd1b3" opacity="0.75"/>
+            <polygon points="100,10 124,110 76,110" fill="#8c1e17" opacity="0.85"/>
+            <polygon points="140,10 164,110 116,110" fill="#dfd1b3" opacity="0.85"/>
+            <polygon points="180,10 204,110 156,110" fill="#8c1e17" opacity="0.75"/>
+            <polygon points="220,10 244,110 196,110" fill="#dfd1b3" opacity="0.65"/>
 
-            <polygon points="40,20 62,92 18,92" fill="#8c1e17" opacity="0.95"/>
-            <polygon points="80,20 102,92 58,92" fill="#dfd1b3" opacity="0.95"/>
-            <polygon points="120,20 142,92 98,92" fill="#8c1e17" opacity="0.95"/>
-            <polygon points="160,20 182,92 138,92" fill="#dfd1b3" opacity="0.95"/>
-
-            <polygon points="40,180 62,108 18,108" fill="#dfd1b3" opacity="0.95"/>
-            <polygon points="80,180 102,108 58,108" fill="#8c1e17" opacity="0.95"/>
-            <polygon points="120,180 142,108 98,108" fill="#dfd1b3" opacity="0.95"/>
-            <polygon points="160,180 182,108 138,108" fill="#8c1e17" opacity="0.95"/>
-
-            <line x1="100" y1="20" x2="100" y2="180" stroke="#2d1408" stroke-width="6" opacity="0.6"/>
-
-            <g filter="url(#checkerShadow)">
-              <circle cx="76" cy="100" r="30" fill="url(#onyxShade)" stroke="#4a4d53" stroke-width="2"/>
-              <circle cx="76" cy="100" r="21" fill="none" stroke="rgba(255,255,255,0.22)" stroke-width="1.5"/>
-              <circle cx="76" cy="100" r="10" fill="none" stroke="rgba(212,175,55,0.4)" stroke-width="1"/>
+            <!-- 前面に交差して配置された漆黒と象牙の立体チェッカー -->
+            <g filter="url(#symbolShadow)">
+              <!-- 漆黒チェッカー -->
+              <circle cx="95" cy="95" r="34" fill="url(#onyxChecker)" stroke="#52565e" stroke-width="2.5"/>
+              <circle cx="95" cy="95" r="23" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
+              <circle cx="95" cy="95" r="11" fill="none" stroke="rgba(212,175,55,0.4)" stroke-width="1"/>
             </g>
 
-            <g filter="url(#checkerShadow)">
-              <circle cx="124" cy="100" r="30" fill="url(#ivoryShade)" stroke="#b8ab8b" stroke-width="2"/>
-              <circle cx="124" cy="100" r="21" fill="none" stroke="rgba(138,120,90,0.45)" stroke-width="1.5"/>
-              <circle cx="124" cy="100" r="10" fill="none" stroke="rgba(212,175,55,0.6)" stroke-width="1"/>
+            <g filter="url(#symbolShadow)">
+              <!-- 象牙チェッカー（右側に重ねる） -->
+              <circle cx="145" cy="95" r="34" fill="url(#ivoryChecker)" stroke="#b8ab8b" stroke-width="2.5"/>
+              <circle cx="145" cy="95" r="23" fill="none" stroke="rgba(138,120,90,0.45)" stroke-width="1.5"/>
+              <circle cx="145" cy="95" r="11" fill="none" stroke="rgba(212,175,55,0.6)" stroke-width="1"/>
             </g>
           </svg>
         </div>
@@ -122,7 +107,7 @@
         </div>
       </header>
 
-      <!-- 相手（Top Player / CPU）情報バー：プレイヤー側と完全に対称 -->
+      <!-- 相手（Top Player / CPU）情報バー -->
       <div class="player-strip opponent-strip">
         <div class="player-top-header">
           <div class="player-profile">
@@ -209,6 +194,25 @@
 
         <div id="init-result-text" style="font-weight: 800; font-size: 1.1rem; color: #ffd700; min-height: 28px;"></div>
         <button id="init-action-btn" class="btn-primary" data-i18n="rollDice">Roll Dice</button>
+      </div>
+    </div>
+
+    <!-- GAME RESULT / VICTORY MODAL（正式実装） -->
+    <div id="result-modal" class="overlay hidden">
+      <div class="modal-box result-modal-box">
+        <div class="result-crest" id="result-crest">🏆</div>
+        <h2 class="modal-title result-title" id="result-title">Victory!</h2>
+        <div class="result-badge" id="result-badge">Single Win</div>
+        <p class="modal-desc" id="result-desc">All checkers successfully borne off.</p>
+
+        <div class="result-actions">
+          <button id="result-share-btn" class="btn-secondary share-btn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            <span data-i18n="shareResult">Share on X</span>
+          </button>
+          <button id="result-restart-btn" class="btn-primary" data-i18n="playAgain">Play Again</button>
+          <button id="result-title-btn" class="btn-secondary" data-i18n="toTitle">Title</button>
+        </div>
       </div>
     </div>
 
