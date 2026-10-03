@@ -5,13 +5,21 @@
 
 const I18N = {
   en: {
+    portalLink: "‹ Back to Clubhouse",
     subtitle: "THE HERITAGE BOARD GAME",
     mode: "Game Mode",
+    modeCpu: "vs CPU",
+    modeLocal: "2 Players",
     difficulty: "Difficulty",
+    diffEasy: "Easy",
+    diffNormal: "Normal",
+    diffHard: "Hard",
     resume: "Resume Game",
     start: "Play Game",
     howToPlay: "How to Play",
     records: "Records & Stats",
+    backToTitle: "To Title",
+    cpuThinking: "CPU Thinking",
     roll: "Roll",
     initiativeTitle: "First Move Roll",
     initiativeDesc: "Both players roll one standard die. The higher roll moves first using both values. (Ties will be re-rolled).",
@@ -28,7 +36,7 @@ const I18N = {
     rule2Title: "2. Movement & Blots",
     rule2Desc: "White moves toward point 1. An isolated checker is a blot; landing on it sends it to the central Bar.",
     rule3Title: "3. Doubles",
-    rule3Desc: "Rolling matching dice allows you to move 4 times with that number.",
+    rule3Desc: "Rolling matching numbers gives you 4 moves of that value instead of 2!",
     settings: "Settings",
     lang: "Language",
     sound: "Sound Effects",
@@ -40,21 +48,31 @@ const I18N = {
     totalGames: "Total Matches:",
     whiteWins: "White Victories:",
     blackWins: "Black Victories:",
-    confirmLeave: "Return to title? Your current match will be saved.",
-    confirmReset: "Are you sure you want to reset all game data and stats? This cannot be undone.",
+    confirmLeaveTitle: "Return to Title?",
+    confirmLeaveDesc: "Your match progress will be saved automatically.",
+    confirmResetTitle: "Reset Data?",
+    confirmResetDesc: "Are you sure you want to reset all game data and stats? This cannot be undone.",
     whiteTurnText: "White's Turn",
     blackTurnText: "Black's Turn",
     winnerWhite: "White Wins!",
     winnerBlack: "Black Wins!"
   },
   ja: {
+    portalLink: "‹ CLUB HOUSEに戻る",
     subtitle: "伝統と歴史の王道ボードゲーム",
     mode: "対戦モード",
+    modeCpu: "vs CPU",
+    modeLocal: "ふたりで遊ぶ",
     difficulty: "CPU難易度",
+    diffEasy: "初級",
+    diffNormal: "中級",
+    diffHard: "上級",
     resume: "つづきから",
     start: "対局開始",
     howToPlay: "あそびかた",
     records: "戦績・やりこみ",
+    backToTitle: "タイトルに戻る",
+    cpuThinking: "CPU考え中",
     roll: "振る",
     initiativeTitle: "先攻・後攻の決定",
     initiativeDesc: "白と黒のサイコロを1個ずつ振ります。出目の大きい方が先攻となり、その2つの出目で初手を動かします。（同点は振り直し）",
@@ -83,8 +101,10 @@ const I18N = {
     totalGames: "総対局数:",
     whiteWins: "白の勝利数:",
     blackWins: "黒の勝利数:",
-    confirmLeave: "タイトルへ戻りますか？（進行状況は自動保存されます）",
-    confirmReset: "ハイスコアや戦績を完全に初期化しますか？この操作は取り消せません。",
+    confirmLeaveTitle: "タイトルへ戻りますか？",
+    confirmLeaveDesc: "進行状況は自動保存されます。",
+    confirmResetTitle: "データ初期化",
+    confirmResetDesc: "ハイスコアや戦績を完全に初期化しますか？この操作は取り消せません。",
     whiteTurnText: "白の手番",
     blackTurnText: "黒の手番",
     winnerWhite: "白の勝利！",
@@ -189,19 +209,15 @@ class BackgammonGame {
       return pt;
     };
 
-    // Outer Top: 12..17
     for (let i = 12; i <= 17; i++) {
       this.dom.quadOuterTop.appendChild(createPt(i, true));
     }
-    // Inner Top: 18..23
     for (let i = 18; i <= 23; i++) {
       this.dom.quadInnerTop.appendChild(createPt(i, true));
     }
-    // Outer Bottom: 11..6
     for (let i = 11; i >= 6; i--) {
       this.dom.quadOuterBottom.appendChild(createPt(i, false));
     }
-    // Inner Bottom: 5..0
     for (let i = 5; i >= 0; i--) {
       this.dom.quadInnerBottom.appendChild(createPt(i, false));
     }
@@ -210,9 +226,11 @@ class BackgammonGame {
   applySettings() {
     audio.enabled = this.settings.sound;
     this.dom.audioToggleBtn.textContent = this.settings.sound ? '🔊' : '🔇';
+    
+    // Multi-language update
     document.querySelectorAll('[data-i18n]').forEach(el => {
       const key = el.getAttribute('data-i18n');
-      if (I18N[this.settings.lang][key]) {
+      if (I18N[this.settings.lang] && I18N[this.settings.lang][key]) {
         el.textContent = I18N[this.settings.lang][key];
       }
     });
@@ -229,6 +247,8 @@ class BackgammonGame {
 
     const vibeTgl = document.getElementById('vibe-toggle');
     if (vibeTgl) vibeTgl.classList.toggle('on', this.settings.haptics);
+
+    this.updateControls();
   }
 
   vibrate(ms = 30) {
@@ -273,7 +293,8 @@ class BackgammonGame {
     
     // Header Actions
     this.dom.headerBackBtn.addEventListener('click', () => {
-      this.confirmDialog(I18N[this.settings.lang].confirmLeave, () => {
+      const curLang = I18N[this.settings.lang];
+      this.confirmDialog(curLang.confirmLeaveTitle, curLang.confirmLeaveDesc, () => {
         this.saveGameState();
         this.dom.titleScreen.classList.remove('hidden');
         this.checkResume();
@@ -314,7 +335,8 @@ class BackgammonGame {
     });
 
     document.getElementById('reset-data-btn').addEventListener('click', () => {
-      this.confirmDialog(I18N[this.settings.lang].confirmReset, () => {
+      const curLang = I18N[this.settings.lang];
+      this.confirmDialog(curLang.confirmResetTitle, curLang.confirmResetDesc, () => {
         storage.clearAllData();
         this.settings = storage.getSettings();
         this.stats = storage.getStats();
@@ -338,8 +360,9 @@ class BackgammonGame {
     this.vibrate(15);
   }
 
-  confirmDialog(msg, onOk) {
-    this.dom.confirmMsg.textContent = msg;
+  confirmDialog(title, desc, onOk) {
+    this.dom.confirmTitle.textContent = title;
+    this.dom.confirmMsg.textContent = desc;
     this.openOverlay(this.dom.confirmModal);
     
     const cleanup = () => {
@@ -447,9 +470,6 @@ class BackgammonGame {
   }
 
   setupStartingBoard(initData) {
-    // Official Backgammon initial positions:
-    // White: 2 on pt 23, 5 on pt 12, 3 on pt 7, 5 on pt 5
-    // Black: 2 on pt 0, 5 on pt 11, 3 on pt 16, 5 on pt 18
     this.points = new Array(24).fill(0);
     this.points[23] = 2;
     this.points[12] = 5;
@@ -537,7 +557,6 @@ class BackgammonGame {
   verifyTurnPossibilities() {
     const moves = this.getAllValidMoves(this.turn, this.availableMoves);
     if (moves.length === 0 && this.availableMoves.length > 0) {
-      // No legal moves left: Pass turn
       setTimeout(() => {
         this.nextTurn();
       }, 1000);
@@ -659,17 +678,14 @@ class BackgammonGame {
         if (this.points[target] >= -1) return { valid: true, target };
         return { valid: false };
       } else {
-        // Bear off attempt
         if (!this.isBearOffAllowed('white')) return { valid: false };
         if (target === -1) return { valid: true, target: 'bearoff' };
-        // Bearing off from deeper point only if no checkers on higher points
         for (let i = from + 1; i < 6; i++) {
           if (this.points[i] > 0) return { valid: false };
         }
         return { valid: true, target: 'bearoff' };
       }
     } else {
-      // Black
       if (from === 'bar') {
         const target = die - 1;
         if (this.points[target] <= 1) return { valid: true, target };
@@ -680,7 +696,6 @@ class BackgammonGame {
         if (this.points[target] <= 1) return { valid: true, target };
         return { valid: false };
       } else {
-        // Bear off attempt
         if (!this.isBearOffAllowed('black')) return { valid: false };
         if (target === 24) return { valid: true, target: 'bearoff' };
         for (let i = from - 1; i >= 18; i--) {
@@ -705,7 +720,6 @@ class BackgammonGame {
       else this.bearOff.black++;
       audio.playCheckerTap();
     } else {
-      // Check Hit
       if (player === 'white' && this.points[to] === -1) {
         this.points[to] = 1;
         this.bar.black++;
@@ -791,7 +805,6 @@ class BackgammonGame {
     const bearEl = e.target.closest('.bearoff-pocket');
 
     if (this.selectedSource === null) {
-      // Selecting Source
       if (barEl) {
         if (this.turn === 'white' && barEl.id === 'bar-white' && this.bar.white > 0) {
           this.selectSource('bar');
@@ -807,7 +820,6 @@ class BackgammonGame {
         }
       }
     } else {
-      // Selecting Target
       if (ptEl) {
         const targetPt = parseInt(ptEl.dataset.point, 10);
         this.tryApplyUserMove(targetPt);
@@ -910,22 +922,19 @@ class BackgammonGame {
     let chosenMove = null;
 
     if (this.diff === 'easy') {
-      // Pick random
       chosenMove = validMoves[Math.floor(Math.random() * validMoves.length)];
     } else if (this.diff === 'normal') {
-      // Hit blots if available
       const hitMove = validMoves.find(m => m.to !== 'bearoff' && this.points[m.to] === 1);
       chosenMove = hitMove || validMoves[Math.floor(Math.random() * validMoves.length)];
     } else {
-      // Hard: Heuristic Evaluation
       let bestScore = -9999;
       validMoves.forEach(m => {
         let score = 0;
         if (m.to === 'bearoff') score += 50;
-        else if (this.points[m.to] === 1) score += 35; // Hit blot
-        else if (this.points[m.to] <= -1) score += 15; // Make point
+        else if (this.points[m.to] === 1) score += 35;
+        else if (this.points[m.to] <= -1) score += 15;
         if (m.from === 'bar') score += 25;
-        score += (m.die); // advance
+        score += (m.die);
         if (score > bestScore) {
           bestScore = score;
           chosenMove = m;
@@ -943,10 +952,8 @@ class BackgammonGame {
 
   // --- BOARD RENDERING ---
   renderBoard() {
-    // Clear legal target classes
     document.querySelectorAll('.legal-target').forEach(el => el.classList.remove('legal-target'));
 
-    // Render Points
     for (let i = 0; i < 24; i++) {
       const ptEl = document.querySelector(`.point[data-point="${i}"]`);
       if (!ptEl) continue;
@@ -976,10 +983,7 @@ class BackgammonGame {
       }
     }
 
-    // Render Bar
     this.renderBarPockets();
-
-    // Render Bear-off
     this.renderBearOffPockets();
   }
 
@@ -1016,7 +1020,6 @@ class BackgammonGame {
   }
 }
 
-// Instantiate on DOM ready
 document.addEventListener('DOMContentLoaded', () => {
   window.game = new BackgammonGame();
 });
