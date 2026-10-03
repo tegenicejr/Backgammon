@@ -19,6 +19,7 @@ const I18N = {
     howToPlay: "How to Play",
     records: "Records & Stats",
     backToTitle: "Title",
+    toTitle: "Title",
     cpuThinking: "CPU Thinking",
     noMovesPass: "No legal moves! Passing turn...",
     roll: "Roll",
@@ -29,6 +30,8 @@ const I18N = {
     oppPlayer: "Black (Player 2)",
     rollDice: "Roll Dice",
     startGame: "Start Game",
+    playAgain: "Play Again",
+    shareResult: "Share on X",
     whiteFirst: "White wins the roll and plays first!",
     blackFirst: "Black wins the roll and plays first!",
     tieRoll: "Tie! Re-rolling dice...",
@@ -56,7 +59,12 @@ const I18N = {
     whiteTurnText: "White's Turn",
     blackTurnText: "Black's Turn",
     winnerWhite: "White Wins!",
-    winnerBlack: "Black Wins!"
+    winnerBlack: "Black Wins!",
+    winDescWhite: "White has borne off all 15 checkers first!",
+    winDescBlack: "Black has borne off all 15 checkers first!",
+    singleWin: "Single Win (+1)",
+    gammonWin: "Gammon Victory (+2)",
+    backgammonWin: "Backgammon Victory (+3)"
   },
   ja: {
     portalLink: "‹ CLUB HOUSEに戻る",
@@ -73,6 +81,7 @@ const I18N = {
     howToPlay: "あそびかた",
     records: "戦績・やりこみ",
     backToTitle: "タイトルへ",
+    toTitle: "タイトルへ",
     cpuThinking: "CPU考え中",
     noMovesPass: "置ける手がありません。パスします",
     roll: "振る",
@@ -83,6 +92,8 @@ const I18N = {
     oppPlayer: "黒（プレイヤー2）",
     rollDice: "サイコロを振る",
     startGame: "対局開始",
+    playAgain: "もう一度遊ぶ",
+    shareResult: "Xで結果をポスト",
     whiteFirst: "白の先攻です！この出目で開始します。",
     blackFirst: "黒の先攻です！この出目で開始します。",
     tieRoll: "同点です！もう一度振ります。",
@@ -99,7 +110,7 @@ const I18N = {
     resetData: "全データ初期化",
     close: "とじる",
     cancel: "キャンセル",
-    confirm: "もどる",
+    confirm: "確定",
     totalGames: "総対局数:",
     whiteWins: "白の勝利数:",
     blackWins: "黒の勝利数:",
@@ -110,7 +121,12 @@ const I18N = {
     whiteTurnText: "白の手番",
     blackTurnText: "黒の手番",
     winnerWhite: "白の勝利！",
-    winnerBlack: "黒の勝利！"
+    winnerBlack: "黒の勝利！",
+    winDescWhite: "白がすべての駒をベアオフしました！",
+    winDescBlack: "黒がすべての駒をベアオフしました！",
+    singleWin: "シングル勝ち (+1)",
+    gammonWin: "ギャモン勝ち！ (+2)",
+    backgammonWin: "バックギャモン大勝利！ (+3)"
   }
 };
 
@@ -119,21 +135,23 @@ class BackgammonGame {
     this.settings = storage.getSettings();
     this.stats = storage.getStats();
     
-    this.mode = 'cpu'; // 'cpu' | 'local'
-    this.diff = 'easy'; // 'easy' | 'normal' | 'hard'
+    this.mode = 'cpu';
+    this.diff = 'easy';
     
     this.points = new Array(24).fill(0);
     this.bar = { white: 0, black: 0 };
     this.bearOff = { white: 0, black: 0 };
     
-    this.turn = 'white'; // 'white' | 'black'
+    this.turn = 'white';
     this.dice = [];
     this.availableMoves = [];
     this.selectedSource = null;
     
     this.isRolling = false;
     this.isCpuThinking = false;
-    this.isTransitioning = false; // 二重発火防止フラグ
+    this.isTransitioning = false;
+    
+    this.lastWinResult = null;
     
     this.initDOM();
     this.applySettings();
@@ -181,6 +199,17 @@ class BackgammonGame {
       initResultText: document.getElementById('init-result-text'),
       initActionBtn: document.getElementById('init-action-btn'),
       initOppLabel: document.getElementById('init-opp-label'),
+      
+      // Victory / Result Modal
+      resultModal: document.getElementById('result-modal'),
+      resultCrest: document.getElementById('result-crest'),
+      resultTitle: document.getElementById('result-title'),
+      resultBadge: document.getElementById('result-badge'),
+      resultDesc: document.getElementById('result-desc'),
+      resultShareBtn: document.getElementById('result-share-btn'),
+      resultRestartBtn: document.getElementById('result-restart-btn'),
+      resultTitleBtn: document.getElementById('result-title-btn'),
+
       rulesModal: document.getElementById('rules-modal'),
       rulesCloseBtn: document.getElementById('rules-close-btn'),
       settingsModal: document.getElementById('settings-modal'),
@@ -285,6 +314,22 @@ class BackgammonGame {
     this.dom.titleSettingsBtn.addEventListener('click', () => this.openOverlay(this.dom.settingsModal));
     this.dom.settingsCloseBtn.addEventListener('click', () => this.closeOverlay(this.dom.settingsModal));
     
+    // Result Modal Events
+    this.dom.resultRestartBtn.addEventListener('click', () => {
+      this.closeOverlay(this.dom.resultModal);
+      this.startNewMatchFlow();
+    });
+
+    this.dom.resultTitleBtn.addEventListener('click', () => {
+      this.closeOverlay(this.dom.resultModal);
+      this.dom.titleScreen.classList.remove('hidden');
+      this.checkResume();
+    });
+
+    this.dom.resultShareBtn.addEventListener('click', () => {
+      this.shareOnX();
+    });
+
     this.dom.headerBackBtn.addEventListener('click', () => {
       const curLang = I18N[this.settings.lang];
       this.confirmDialog(curLang.confirmLeaveTitle, curLang.confirmLeaveDesc, () => {
@@ -548,13 +593,11 @@ class BackgammonGame {
     }, 300);
   }
 
-  // --- 合法手確認 ＆ 置けない時のパス・ターン交代処理 ---
   verifyTurnPossibilities() {
     if (this.availableMoves.length === 0) return;
 
     const moves = this.getAllValidMoves(this.turn, this.availableMoves);
     if (moves.length === 0) {
-      // 置ける手がない！即座にパスして相手へターン移行
       this.handleNoMovesPass();
     } else {
       this.highlightPlayableCheckers();
@@ -565,11 +608,7 @@ class BackgammonGame {
     if (this.isTransitioning) return;
     this.isTransitioning = true;
 
-    // パス案内表示
-    const origText = this.dom.turnText.textContent;
     this.dom.turnText.textContent = I18N[this.settings.lang].noMovesPass;
-
-    // ダイス目をグレーアウト
     this.availableMoves = [];
     this.updateControls();
 
@@ -770,14 +809,15 @@ class BackgammonGame {
     }
   }
 
+  // --- 正式な勝敗判定 ＆ リザルトモーダル表示 ---
   checkVictory(player) {
     if (this.bearOff[player] === 15) {
       audio.playVictory();
       this.vibrate([100, 50, 150]);
       
       const opp = player === 'white' ? 'black' : 'white';
-      let isGammon = this.bearOff[opp] === 0;
-      let isBackgammon = isGammon && (
+      const isGammon = this.bearOff[opp] === 0;
+      const isBackgammon = isGammon && (
         this.bar[opp] > 0 || 
         (opp === 'black' ? this.hasCheckersInQuad(0, 5, -1) : this.hasCheckersInQuad(18, 23, 1))
       );
@@ -785,23 +825,52 @@ class BackgammonGame {
       this.stats.gamesPlayed++;
       if (player === 'white') this.stats.whiteWins++;
       else this.stats.blackWins++;
-      if (isBackgammon) this.stats.backgammons++;
-      else if (isGammon) this.stats.gammons++;
+      
+      let winTypeKey = 'singleWin';
+      if (isBackgammon) {
+        this.stats.backgammons++;
+        winTypeKey = 'backgammonWin';
+      } else if (isGammon) {
+        this.stats.gammons++;
+        winTypeKey = 'gammonWin';
+      }
+
       storage.saveStats(this.stats);
       storage.clearSaveState();
 
-      const winTitle = player === 'white' 
-        ? I18N[this.settings.lang].winnerWhite 
-        : I18N[this.settings.lang].winnerBlack;
+      this.lastWinResult = {
+        winner: player,
+        winType: winTypeKey,
+        isBackgammon,
+        isGammon
+      };
 
       setTimeout(() => {
-        alert(`${winTitle} ${isBackgammon ? '(Backgammon!)' : isGammon ? '(Gammon!)' : ''}`);
-        this.dom.titleScreen.classList.remove('hidden');
-        this.checkResume();
+        this.showResultModal(this.lastWinResult);
       }, 500);
       return true;
     }
     return false;
+  }
+
+  showResultModal(result) {
+    const curLang = I18N[this.settings.lang];
+    const isPlayerWin = result.winner === 'white' || (this.mode === 'local' && result.winner === 'white');
+
+    this.dom.resultCrest.textContent = (result.winner === 'white' || this.mode === 'local') ? '👑' : '💀';
+    this.dom.resultTitle.textContent = result.winner === 'white' ? curLang.winnerWhite : curLang.winnerBlack;
+    this.dom.resultBadge.textContent = curLang[result.winType];
+    this.dom.resultDesc.textContent = result.winner === 'white' ? curLang.winDescWhite : curLang.winDescBlack;
+
+    this.openOverlay(this.dom.resultModal);
+  }
+
+  shareOnX() {
+    const curLang = I18N[this.settings.lang];
+    const winTypeStr = curLang[this.lastWinResult.winType];
+    const text = `【Games Clubhouse: バックギャモン】\n${this.lastWinResult.winner === 'white' ? '白（プレイヤー）' : '黒'}の勝利！ [${winTypeStr}]\n伝統のボードゲームで決着！\n#GamesClubhouse #Backgammon #バックギャモン`;
+    const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
+    window.open(url, '_blank', 'noopener,noreferrer');
   }
 
   hasCheckersInQuad(start, end, sign) {
@@ -907,7 +976,6 @@ class BackgammonGame {
     }
   }
 
-  // --- CPU OPPONENT ENGINE (厳格なパス制御・再ロールバグ解消) ---
   triggerCpuTurn() {
     if (this.turn !== 'black' || this.isTransitioning) return;
 
@@ -922,7 +990,6 @@ class BackgammonGame {
         this.availableMoves = d1 === d2 ? [d1, d1, d1, d1] : [d1, d2];
         this.updateControls();
 
-        // ダイスを振った直後に合法手をチェック
         const validMoves = this.getAllValidMoves('black', this.availableMoves);
         if (validMoves.length === 0) {
           this.dom.thinkingIndicator.style.display = 'none';
@@ -983,7 +1050,6 @@ class BackgammonGame {
     this.dom.thinkingIndicator.style.display = 'none';
     this.executeMove('black', chosenMove.from, chosenMove.to, chosenMove.die);
 
-    // 次の手があるかチェックして続行または交代
     if (this.availableMoves.length > 0 && this.turn === 'black') {
       const nextMoves = this.getAllValidMoves('black', this.availableMoves);
       if (nextMoves.length === 0) {
