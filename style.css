@@ -514,7 +514,7 @@ button {
   flex-direction: column-reverse;
 }
 
-/* 駒：参考画像のようにポイント幅にちょうど収まるサイズ感 */
+/* 駒：ポイント幅にちょうど収まるサイズ感 */
 .checker {
   width: 28px;
   height: 28px;
@@ -854,6 +854,19 @@ button {
     max-width: 1050px;
   }
 
+  /* PC時：上部プレイヤー帯（CPU・PIP）を中央に狭めず、ボード幅に合わせて左寄せ配置 */
+  .player-strip {
+    padding: 6px 20px;
+  }
+
+  .player-top-header {
+    max-width: 860px;
+    width: 100%;
+    margin: 0 auto;
+    justify-content: flex-start;
+    gap: 20px;
+  }
+
   .board-frame {
     max-width: 860px;
     aspect-ratio: 1.5 / 1;
@@ -905,13 +918,17 @@ button {
 
   .player-bottom-header {
     width: auto;
-    gap: 16px;
+    max-width: none;
+    gap: 20px;
     margin: 0;
+    justify-content: flex-start;
   }
 
   .player-action-row {
     width: auto;
+    max-width: none;
     gap: 20px;
     margin: 0;
+    justify-content: flex-end;
   }
 }
