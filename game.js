@@ -110,7 +110,7 @@ const I18N = {
     resetData: "全データ初期化",
     close: "とじる",
     cancel: "キャンセル",
-    confirm: "確定",
+    confirm: "もどる",
     totalGames: "総対局数:",
     whiteWins: "白の勝利数:",
     blackWins: "黒の勝利数:",
