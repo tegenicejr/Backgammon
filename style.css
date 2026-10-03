@@ -42,7 +42,7 @@ button {
   outline: none;
 }
 
-/* App Container */
+/* App Container (Responsive) */
 #app {
   width: 100%;
   max-width: 900px;
@@ -51,6 +51,8 @@ button {
   overflow: hidden;
   background-color: var(--wood-rim);
   box-shadow: 0 0 40px rgba(0,0,0,0.8);
+  display: flex;
+  flex-direction: column;
 }
 
 /* Modals & Overlays */
@@ -58,7 +60,7 @@ button {
   position: absolute;
   inset: 0;
   z-index: 100;
-  background: rgba(10, 5, 2, 0.92);
+  background: rgba(10, 5, 2, 0.94);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   display: flex;
@@ -100,7 +102,6 @@ button {
   margin: 10px 0;
 }
 
-/* Title Emblem (Board Triangles & 2-Color Checkers) */
 .title-emblem-wrap {
   width: 130px;
   height: 130px;
@@ -207,7 +208,7 @@ button {
   border: 1px solid rgba(255,255,255,0.15);
 }
 
-/* Game Screen */
+/* Game View */
 #game-view {
   width: 100%;
   height: 100%;
@@ -217,15 +218,17 @@ button {
 }
 
 .game-header {
-  height: 52px;
+  height: 48px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 14px;
+  padding: 0 12px;
   background: rgba(0,0,0,0.5);
   border-bottom: 2px solid #3d1c0b;
+  flex-shrink: 0;
 }
 
+/* Back to Title Button (Gold & Clean Link Style) */
 .back-nav-btn {
   background: transparent;
   border: none;
@@ -258,7 +261,7 @@ button {
   background: transparent;
   color: #d6c5a9;
   font-size: 1.25rem;
-  padding: 6px 8px;
+  padding: 4px 6px;
   border-radius: 6px;
 }
 
@@ -269,36 +272,59 @@ button {
   color: var(--brass-light);
 }
 
-.status-bar {
+/* Player Strips (Mobile Vertical Layout) */
+.player-strip {
   display: flex;
   align-items: center;
-  gap: 10px;
-  font-size: 0.85rem;
-}
-
-.pip-box {
-  display: flex;
-  gap: 8px;
+  justify-content: space-between;
+  padding: 8px 16px;
   background: rgba(0,0,0,0.4);
-  padding: 4px 10px;
-  border-radius: 20px;
-  border: 1px solid rgba(212,175,55,0.25);
-  font-weight: 700;
+  border-bottom: 1px solid rgba(212,175,55,0.2);
+  flex-shrink: 0;
 }
 
-/* Board Arena */
+.player-profile {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.player-name {
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: #e6dac6;
+}
+
+.player-pip-badge {
+  background: rgba(0,0,0,0.5);
+  border: 1px solid rgba(212,175,55,0.3);
+  padding: 3px 10px;
+  border-radius: 14px;
+  font-size: 0.82rem;
+  color: #d4af37;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.player-pip-badge b {
+  color: #ffffff;
+}
+
+/* Board Arena & Board Frame */
 .board-arena {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 8px;
+  padding: 6px;
   position: relative;
+  min-height: 0; /* flex container overflow prevention */
 }
 
 .board-frame {
   flex: 1;
   background: var(--felt-bg);
-  border: 8px solid var(--wood-inner);
+  border: 7px solid var(--wood-inner);
   border-radius: 8px;
   box-shadow: inset 0 0 25px rgba(0,0,0,0.85), 0 4px 12px rgba(0,0,0,0.6);
   display: flex;
@@ -315,15 +341,16 @@ button {
 }
 
 .bar-divider {
-  width: 32px;
+  width: 30px;
   background: linear-gradient(90deg, #2b1408, #45210f, #2b1408);
   box-shadow: 0 0 10px rgba(0,0,0,0.7);
   display: flex;
   flex-direction: column;
   justify-content: space-around;
   align-items: center;
-  padding: 10px 0;
+  padding: 8px 0;
   z-index: 10;
+  flex-shrink: 0;
 }
 
 .bar-well {
@@ -339,10 +366,10 @@ button {
   height: 48%;
   display: flex;
   position: relative;
-  overflow: visible; /* 駒が中央にはみ出せるように */
+  overflow: visible;
 }
 
-/* Points & Triangles (クリッピングを解除し駒を外へ飛び出させる構造) */
+/* Point Triangles & Floating Stack */
 .point {
   flex: 1;
   height: 100%;
@@ -352,18 +379,17 @@ button {
   align-items: center;
   cursor: pointer;
   touch-action: manipulation;
-  overflow: visible; /* 駒やアシストのはみ出しを許可 */
+  overflow: visible;
   z-index: 5;
 }
 
-/* 三角形は ::before 疑似要素にのみ適用し、駒の領域を切り取らない */
 .point::before {
   content: "";
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
-  height: 85%; /* 三角形の高さ */
+  height: 85%;
   pointer-events: none;
   z-index: 1;
 }
@@ -394,7 +420,7 @@ button {
   background: linear-gradient(0deg, #9e241c 0%, #590f0b 100%);
 }
 
-/* 合法手ハイライト (三角の外側・先端にも明瞭に光の目印を表示) */
+/* Legal Target Highlight */
 .point.legal-target {
   z-index: 25;
 }
@@ -406,23 +432,18 @@ button {
 .point.legal-target::after {
   content: "";
   position: absolute;
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
   background: radial-gradient(circle, #fff380 0%, #ffd700 70%, #d49b00 100%);
-  box-shadow: 0 0 12px #ffe14c, 0 0 20px rgba(255, 215, 0, 0.6);
+  box-shadow: 0 0 10px #ffe14c, 0 0 16px rgba(255, 215, 0, 0.6);
   z-index: 30;
   pointer-events: none;
   animation: pulse-target 0.8s infinite alternate ease-in-out;
 }
 
-.point-top.legal-target::after {
-  bottom: 2px;
-}
-
-.point-bottom.legal-target::after {
-  top: 2px;
-}
+.point-top.legal-target::after { bottom: 2px; }
+.point-bottom.legal-target::after { top: 2px; }
 
 @keyframes pulse-target {
   0% { transform: scale(0.9); opacity: 0.85; }
@@ -431,7 +452,7 @@ button {
 
 /* Bear-off Tray */
 .bearoff-tray {
-  width: 32px;
+  width: 28px;
   background: #1e0d05;
   border-left: 2px solid #4a2713;
   display: flex;
@@ -439,6 +460,7 @@ button {
   justify-content: space-between;
   padding: 6px 2px;
   z-index: 10;
+  flex-shrink: 0;
 }
 
 .bearoff-pocket {
@@ -460,7 +482,7 @@ button {
   box-shadow: inset 0 0 10px rgba(255,215,0,0.4);
 }
 
-/* Checkers Stack (三角からはみ出し、中央に向かってゆったり積み重なる) */
+/* Checker Stack & Sizing (Responsive across Mobile & Desktop) */
 .checker-stack {
   position: absolute;
   top: 0;
@@ -476,18 +498,12 @@ button {
   overflow: visible;
 }
 
-.point-top .checker-stack {
-  justify-content: flex-start;
-}
+.point-top .checker-stack { justify-content: flex-start; }
+.point-bottom .checker-stack { justify-content: flex-end; }
 
-.point-bottom .checker-stack {
-  justify-content: flex-end;
-}
-
-/* Checkers (駒本体) */
 .checker {
-  width: 30px;
-  height: 30px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
   position: relative;
   margin-top: -6px;
@@ -510,14 +526,14 @@ button {
 .checker-white {
   background: radial-gradient(circle at 35% 30%, #ffffff 0%, #eee8d8 65%, #c8bea3 100%);
   border: 1.5px solid #ab9d7d;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.6), inset 0 0 4px rgba(255,255,255,0.9);
+  box-shadow: 0 3px 5px rgba(0,0,0,0.6), inset 0 0 3px rgba(255,255,255,0.9);
 }
 
 .checker-white::after {
   content: "";
   position: absolute;
-  width: 17px;
-  height: 17px;
+  width: 15px;
+  height: 15px;
   border-radius: 50%;
   border: 1px solid rgba(138, 120, 90, 0.45);
   pointer-events: none;
@@ -526,14 +542,14 @@ button {
 .checker-black {
   background: radial-gradient(circle at 35% 30%, #44474e 0%, #1e2024 70%, #0a0b0d 100%);
   border: 1.5px solid #52565e;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.85), inset 0 0 3px rgba(255,255,255,0.3);
+  box-shadow: 0 3px 5px rgba(0,0,0,0.85), inset 0 0 2px rgba(255,255,255,0.3);
 }
 
 .checker-black::after {
   content: "";
   position: absolute;
-  width: 17px;
-  height: 17px;
+  width: 15px;
+  height: 15px;
   border-radius: 50%;
   border: 1px solid rgba(255, 255, 255, 0.25);
   pointer-events: none;
@@ -556,13 +572,12 @@ button {
   100% { transform: scale(1.08); }
 }
 
-/* 6駒以上の数字表示：駒の「ど真ん中」に完全配置 */
 .checker-count {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 900;
   line-height: 1;
   text-align: center;
@@ -581,48 +596,62 @@ button {
 }
 
 .bearoff-bar {
-  width: 24px;
+  width: 22px;
   height: 6px;
   border-radius: 2px;
 }
 .bearoff-bar.white { background: #f0ebd9; border: 1px solid #c8be9f; }
 .bearoff-bar.black { background: #1a1a1b; border: 1px solid #555; }
 
-/* Control Console & Dices */
+/* Control Console (Player Bottom Strip in Mobile Layout) */
 .control-console {
-  height: 76px;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 16px;
-  background: rgba(0,0,0,0.6);
+  flex-direction: column;
+  padding: 8px 14px 10px;
+  background: rgba(0,0,0,0.65);
   border-top: 2px solid #3d1c0b;
-}
-
-.player-info-area {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.turn-badge {
-  font-size: 0.95rem;
-  font-weight: 800;
-  display: flex;
-  align-items: center;
+  flex-shrink: 0;
   gap: 6px;
 }
 
+.player-bottom-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.player-action-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 48px;
+}
+
+.turn-status-text {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #edd9b9;
+}
+.turn-status-text.white-turn { color: #fff2c4; }
+.turn-status-text.black-turn { color: #d0d2d6; }
+
 .dice-container {
   display: flex;
-  gap: 12px;
+  gap: 10px;
   align-items: center;
+}
+
+.roll-btn {
+  width: auto;
+  min-width: 90px;
+  padding: 10px 18px;
 }
 
 /* Master Spec Dice (Japanese Standard) */
 .dice {
-  width: 44px;
-  height: 44px;
+  width: 42px;
+  height: 42px;
   background: #fbfbfc;
   border-radius: 9px;
   box-shadow: inset 0 2px 3px #ffffff, inset 0 -2px 3px #b0b4b9, 0 4px 8px rgba(0,0,0,0.5);
@@ -694,7 +723,7 @@ button {
 /* Thinking Banner */
 .thinking-bubble {
   position: absolute;
-  top: 60px;
+  top: 96px;
   left: 50%;
   transform: translateX(-50%);
   background: rgba(0,0,0,0.85);
@@ -711,9 +740,7 @@ button {
   z-index: 60;
 }
 
-.thinking-dots span {
-  animation: blink 1.2s infinite;
-}
+.thinking-dots span { animation: blink 1.2s infinite; }
 .thinking-dots span:nth-child(2) { animation-delay: 0.2s; }
 .thinking-dots span:nth-child(3) { animation-delay: 0.4s; }
 
@@ -806,6 +833,55 @@ button {
   left: 2px;
   transition: transform 0.2s;
 }
-.toggle-switch.on::after {
-  transform: translateX(22px);
+.toggle-switch.on::after { transform: translateX(22px); }
+
+/* --- 横画面（Landscape / PC Desktop）最適化 --- */
+@media (orientation: landscape) and (min-height: 480px), (min-width: 768px) {
+  #app {
+    max-width: 1050px;
+  }
+
+  .checker {
+    width: 32px;
+    height: 32px;
+    margin-top: -8px;
+  }
+
+  .checker-white::after, .checker-black::after {
+    width: 18px;
+    height: 18px;
+  }
+
+  .checker-count {
+    font-size: 15px;
+  }
+
+  .bar-divider {
+    width: 38px;
+  }
+
+  .bearoff-tray {
+    width: 36px;
+  }
+
+  .bearoff-bar {
+    width: 28px;
+    height: 7px;
+  }
+
+  .control-console {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    height: 70px;
+    padding: 0 20px;
+  }
+
+  .player-bottom-header {
+    gap: 16px;
+  }
+
+  .player-action-row {
+    gap: 20px;
+  }
 }
