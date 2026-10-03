@@ -22,7 +22,6 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-/* スクロールバーを完全に消去 */
 html, body {
   width: 100vw;
   height: 100dvh;
@@ -74,7 +73,7 @@ button {
   display: flex;
   flex-direction: column;
   padding: 14px 18px;
-  overflow: hidden; /* スクロールバーの発生を防止 */
+  overflow: hidden;
   transition: opacity 0.3s ease;
 }
 
@@ -94,7 +93,7 @@ button {
   gap: 4px;
 }
 
-/* Title Screen (PCでも横に広がらず中央にジャストフィット) */
+/* Title Screen (アイコン四角枠を撤廃しボードゲームとしての自然な風格へ) */
 #title-screen {
   justify-content: space-between;
   align-items: center;
@@ -120,12 +119,11 @@ button {
 }
 
 .title-emblem-wrap {
-  width: 110px;
+  width: 180px;
   height: 110px;
   display: flex;
   align-items: center;
   justify-content: center;
-  filter: drop-shadow(0 10px 20px rgba(0,0,0,0.7));
 }
 
 .title-symbol-svg {
@@ -135,11 +133,11 @@ button {
 }
 
 .title-logo {
-  font-size: 1.9rem;
+  font-size: 2rem;
   font-weight: 900;
   letter-spacing: 4px;
   text-transform: uppercase;
-  margin-top: 8px;
+  margin-top: 6px;
   background: linear-gradient(180deg, #fff3c4 0%, #d4af37 60%, #875c12 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -147,13 +145,13 @@ button {
 }
 
 .title-subtitle {
-  font-size: 0.8rem;
+  font-size: 0.82rem;
   color: #c9b99a;
   letter-spacing: 2px;
   margin-top: 2px;
 }
 
-/* 設定カード（PCでも最大460pxで中央配置） */
+/* 設定カード */
 .config-card {
   width: 100%;
   max-width: 460px;
@@ -199,7 +197,6 @@ button {
   box-shadow: 0 2px 6px rgba(0,0,0,0.4);
 }
 
-/* メニューボタン群（PCでも最大460pxで中央配置） */
 .menu-actions {
   width: 100%;
   max-width: 460px;
@@ -291,7 +288,7 @@ button {
   color: var(--brass-light);
 }
 
-/* Player Strips (Top & Bottom: Exact Symmetry) */
+/* Player Strips */
 .player-strip {
   padding: 6px 14px;
   background: rgba(0,0,0,0.35);
@@ -336,7 +333,7 @@ button {
   color: #ffffff;
 }
 
-/* Board Arena: 参考アプリに準拠した黄金比率（ほぼ正方形）で中央配置 */
+/* Board Arena & Frame */
 .board-arena {
   flex: 1;
   display: flex;
@@ -398,7 +395,7 @@ button {
   overflow: visible;
 }
 
-/* 三角ポイント */
+/* ポイント */
 .point {
   flex: 1;
   height: 100%;
@@ -642,7 +639,7 @@ button {
 .bearoff-bar.white { background: #f0ebd9; border: 1px solid #c8be9f; }
 .bearoff-bar.black { background: #1a1a1b; border: 1px solid #555; }
 
-/* Control Console (Player Bottom Strip in Mobile Layout) */
+/* Control Console */
 .control-console {
   display: flex;
   flex-direction: column;
@@ -813,6 +810,57 @@ button {
   color: #dfd3bd;
 }
 
+/* --- VICTORY RESULT MODAL --- */
+.result-modal-box {
+  padding: 24px 20px 20px;
+  gap: 12px;
+  border: 2px solid #ffd700;
+  box-shadow: 0 0 35px rgba(212,175,55,0.4);
+}
+
+.result-crest {
+  font-size: 3rem;
+  line-height: 1;
+  filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5));
+}
+
+.result-title {
+  font-size: 1.7rem;
+  background: linear-gradient(180deg, #fff3c4, #ffd700, #b88628);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.result-badge {
+  display: inline-block;
+  align-self: center;
+  background: rgba(212,175,55,0.18);
+  border: 1px solid var(--brass);
+  color: var(--brass-light);
+  font-size: 0.95rem;
+  font-weight: 800;
+  padding: 4px 16px;
+  border-radius: 20px;
+}
+
+.result-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.share-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #000000;
+  border-color: #333333;
+  color: #ffffff;
+}
+.share-btn:hover { background: #111111; border-color: #555555; }
+
 .initiative-arena {
   display: flex;
   justify-content: space-around;
@@ -877,7 +925,6 @@ button {
     max-width: 1050px;
   }
 
-  /* スタート画面をPCでもスマートな中央メニューに固定 */
   #title-screen {
     padding: 24px 20px;
   }
@@ -890,7 +937,7 @@ button {
   }
 
   .title-emblem-wrap {
-    width: 100px;
+    width: 160px;
     height: 100px;
   }
 
@@ -899,7 +946,6 @@ button {
     margin-top: 6px;
   }
 
-  /* ゲーム画面のPC配置 */
   .player-strip {
     padding: 6px 20px;
   }
