@@ -20,6 +20,7 @@ const I18N = {
     records: "Records & Stats",
     backToTitle: "Title",
     cpuThinking: "CPU Thinking",
+    noMovesPass: "No legal moves! Passing turn...",
     roll: "Roll",
     initiativeTitle: "First Move Roll",
     initiativeDesc: "Both players roll one standard die. The higher roll moves first using both values. (Ties will be re-rolled).",
@@ -73,6 +74,7 @@ const I18N = {
     records: "戦績・やりこみ",
     backToTitle: "タイトルへ",
     cpuThinking: "CPU考え中",
+    noMovesPass: "置ける手がありません。パスします",
     roll: "振る",
     initiativeTitle: "先攻・後攻の決定",
     initiativeDesc: "白と黒のサイコロを1個ずつ振ります。出目の大きい方が先攻となり、その2つの出目で初手を動かします。（同点は振り直し）",
@@ -97,7 +99,7 @@ const I18N = {
     resetData: "全データ初期化",
     close: "とじる",
     cancel: "キャンセル",
-    confirm: "もどる",
+    confirm: "確定",
     totalGames: "総対局数:",
     whiteWins: "白の勝利数:",
     blackWins: "黒の勝利数:",
@@ -127,10 +129,11 @@ class BackgammonGame {
     this.turn = 'white'; // 'white' | 'black'
     this.dice = [];
     this.availableMoves = [];
-    this.selectedSource = null; // number | 'bar'
+    this.selectedSource = null;
     
     this.isRolling = false;
     this.isCpuThinking = false;
+    this.isTransitioning = false; // 二重発火防止フラグ
     
     this.initDOM();
     this.applySettings();
@@ -474,13 +477,16 @@ class BackgammonGame {
     this.dice = [...initData.dice];
     this.availableMoves = [...this.dice];
     this.selectedSource = null;
+    this.isTransitioning = false;
 
     this.renderBoard();
     this.updateControls();
     this.saveGameState();
 
     if (this.turn === 'black' && this.mode === 'cpu') {
-      this.triggerCpuTurn();
+      setTimeout(() => this.triggerCpuTurn(), 600);
+    } else {
+      this.verifyTurnPossibilities();
     }
   }
 
@@ -496,13 +502,16 @@ class BackgammonGame {
     this.mode = saved.mode || 'cpu';
     this.diff = saved.diff || 'easy';
     this.selectedSource = null;
+    this.isTransitioning = false;
 
     this.dom.titleScreen.classList.add('hidden');
     this.renderBoard();
     this.updateControls();
 
-    if (this.turn === 'black' && this.mode === 'cpu' && this.availableMoves.length > 0) {
-      this.triggerCpuTurn();
+    if (this.turn === 'black' && this.mode === 'cpu') {
+      setTimeout(() => this.triggerCpuTurn(), 600);
+    } else {
+      this.verifyTurnPossibilities();
     }
   }
 
@@ -520,7 +529,7 @@ class BackgammonGame {
   }
 
   handleRollBtnClick() {
-    if (this.isRolling || this.availableMoves.length > 0) return;
+    if (this.isRolling || this.availableMoves.length > 0 || this.isTransitioning) return;
     audio.playDiceRoll();
     this.vibrate(35);
     this.isRolling = true;
@@ -539,15 +548,35 @@ class BackgammonGame {
     }, 300);
   }
 
+  // --- 合法手確認 ＆ 置けない時のパス・ターン交代処理 ---
   verifyTurnPossibilities() {
+    if (this.availableMoves.length === 0) return;
+
     const moves = this.getAllValidMoves(this.turn, this.availableMoves);
-    if (moves.length === 0 && this.availableMoves.length > 0) {
-      setTimeout(() => {
-        this.nextTurn();
-      }, 1000);
+    if (moves.length === 0) {
+      // 置ける手がない！即座にパスして相手へターン移行
+      this.handleNoMovesPass();
     } else {
       this.highlightPlayableCheckers();
     }
+  }
+
+  handleNoMovesPass() {
+    if (this.isTransitioning) return;
+    this.isTransitioning = true;
+
+    // パス案内表示
+    const origText = this.dom.turnText.textContent;
+    this.dom.turnText.textContent = I18N[this.settings.lang].noMovesPass;
+
+    // ダイス目をグレーアウト
+    this.availableMoves = [];
+    this.updateControls();
+
+    setTimeout(() => {
+      this.isTransitioning = false;
+      this.nextTurn();
+    }, 1100);
   }
 
   nextTurn() {
@@ -555,12 +584,14 @@ class BackgammonGame {
     this.dice = [];
     this.availableMoves = [];
     this.selectedSource = null;
+    this.isTransitioning = false;
+
     this.renderBoard();
     this.updateControls();
     this.saveGameState();
 
     if (this.turn === 'black' && this.mode === 'cpu') {
-      setTimeout(() => this.triggerCpuTurn(), 400);
+      setTimeout(() => this.triggerCpuTurn(), 500);
     }
   }
 
@@ -568,19 +599,19 @@ class BackgammonGame {
     this.dom.whitePip.textContent = this.calcPip('white');
     this.dom.blackPip.textContent = this.calcPip('black');
 
-    // Update Opponent Name Label based on Mode
     this.dom.opponentNameLabel.textContent = this.mode === 'cpu'
       ? I18N[this.settings.lang].oppCpu
       : I18N[this.settings.lang].oppPlayer;
 
-    // Turn banner update
-    this.dom.turnText.textContent = this.turn === 'white' 
-      ? I18N[this.settings.lang].whiteTurnText 
-      : I18N[this.settings.lang].blackTurnText;
+    if (!this.isTransitioning) {
+      this.dom.turnText.textContent = this.turn === 'white' 
+        ? I18N[this.settings.lang].whiteTurnText 
+        : I18N[this.settings.lang].blackTurnText;
+    }
     this.dom.turnText.className = `turn-status-text ${this.turn}-turn`;
 
     const isPlayerTurn = (this.turn === 'white' || this.mode === 'local');
-    const canRoll = isPlayerTurn && this.availableMoves.length === 0;
+    const canRoll = isPlayerTurn && this.availableMoves.length === 0 && !this.isTransitioning;
     this.dom.rollActionBtn.style.display = canRoll ? 'inline-block' : 'none';
 
     this.dom.diceDisplay.innerHTML = '';
@@ -783,7 +814,7 @@ class BackgammonGame {
 
   handleBoardInteraction(e) {
     if (this.turn === 'black' && this.mode === 'cpu') return;
-    if (this.availableMoves.length === 0) return;
+    if (this.availableMoves.length === 0 || this.isTransitioning) return;
 
     const ptEl = e.target.closest('.point');
     const barEl = e.target.closest('.bar-well');
@@ -876,10 +907,14 @@ class BackgammonGame {
     }
   }
 
+  // --- CPU OPPONENT ENGINE (厳格なパス制御・再ロールバグ解消) ---
   triggerCpuTurn() {
+    if (this.turn !== 'black' || this.isTransitioning) return;
+
     if (this.availableMoves.length === 0) {
       this.dom.thinkingIndicator.style.display = 'flex';
       setTimeout(() => {
+        if (this.turn !== 'black') return;
         audio.playDiceRoll();
         const d1 = Math.floor(Math.random() * 6) + 1;
         const d2 = Math.floor(Math.random() * 6) + 1;
@@ -887,19 +922,38 @@ class BackgammonGame {
         this.availableMoves = d1 === d2 ? [d1, d1, d1, d1] : [d1, d2];
         this.updateControls();
 
+        // ダイスを振った直後に合法手をチェック
+        const validMoves = this.getAllValidMoves('black', this.availableMoves);
+        if (validMoves.length === 0) {
+          this.dom.thinkingIndicator.style.display = 'none';
+          this.handleNoMovesPass();
+          return;
+        }
+
         setTimeout(() => this.executeCpuMoveStep(), 800);
       }, 700);
     } else {
+      const validMoves = this.getAllValidMoves('black', this.availableMoves);
+      if (validMoves.length === 0) {
+        this.dom.thinkingIndicator.style.display = 'none';
+        this.handleNoMovesPass();
+        return;
+      }
       this.dom.thinkingIndicator.style.display = 'flex';
-      setTimeout(() => this.executeCpuMoveStep(), 900);
+      setTimeout(() => this.executeCpuMoveStep(), 800);
     }
   }
 
   executeCpuMoveStep() {
+    if (this.turn !== 'black' || this.isTransitioning) {
+      this.dom.thinkingIndicator.style.display = 'none';
+      return;
+    }
+
     const validMoves = this.getAllValidMoves('black', this.availableMoves);
     if (validMoves.length === 0) {
       this.dom.thinkingIndicator.style.display = 'none';
-      setTimeout(() => this.nextTurn(), 600);
+      this.handleNoMovesPass();
       return;
     }
 
@@ -929,8 +983,14 @@ class BackgammonGame {
     this.dom.thinkingIndicator.style.display = 'none';
     this.executeMove('black', chosenMove.from, chosenMove.to, chosenMove.die);
 
+    // 次の手があるかチェックして続行または交代
     if (this.availableMoves.length > 0 && this.turn === 'black') {
-      setTimeout(() => this.triggerCpuTurn(), 500);
+      const nextMoves = this.getAllValidMoves('black', this.availableMoves);
+      if (nextMoves.length === 0) {
+        this.handleNoMovesPass();
+      } else {
+        setTimeout(() => this.triggerCpuTurn(), 500);
+      }
     }
   }
 
