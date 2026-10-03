@@ -211,34 +211,38 @@ button {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 12px;
+  padding: 0 14px;
   background: rgba(0,0,0,0.5);
   border-bottom: 2px solid #3d1c0b;
 }
 
-/* Back button with text */
+/* Back to Title: Match "CLUB HOUSEに戻る" Style (No White Border/Box) */
 .back-nav-btn {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(212, 175, 55, 0.35);
-  border-radius: 6px;
-  color: #eeddbb;
+  background: transparent;
+  border: none;
+  color: #cca462;
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 5px 10px 5px 6px;
-  font-size: 0.85rem;
+  padding: 6px 4px;
+  font-size: 0.9rem;
   font-weight: 700;
-  transition: background 0.2s, border-color 0.2s;
+  transition: opacity 0.2s, transform 0.15s;
+}
+
+.back-nav-btn:hover {
+  opacity: 0.85;
 }
 
 .back-nav-btn:active {
-  background: rgba(212, 175, 55, 0.2);
+  transform: scale(0.96);
+  opacity: 0.7;
 }
 
 .back-arrow {
-  font-size: 1.15rem;
+  font-size: 1.1rem;
   line-height: 1;
-  color: var(--brass);
+  color: #cca462;
 }
 
 .icon-btn {
