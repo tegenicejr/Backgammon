@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Backgammon - Games Clubhouse</title>
+  <link rel="icon" type="image/svg+xml" href="icon.svg">
+  <link rel="apple-touch-icon" href="icon.svg">
   <link rel="manifest" href="manifest.json">
   <link rel="stylesheet" href="style.css">
   <meta name="theme-color" content="#173824">
@@ -18,7 +20,78 @@
       </div>
 
       <div class="title-center">
-        <img src="icon.svg" class="symbol-icon" alt="Backgammon Crest">
+        <!-- バックギャモンの象徴：三角ポイントと2色の立体駒（純粋SVGシンボル） -->
+        <div class="title-emblem-wrap">
+          <svg class="title-symbol-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <!-- 盤面フェルトグラデーション -->
+              <radialGradient id="emblemBg" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#1e4e32"/>
+                <stop offset="70%" stop-color="#143521"/>
+                <stop offset="100%" stop-color="#0a1c11"/>
+              </radialGradient>
+              <!-- 真鍮リムグラデーション -->
+              <linearGradient id="brassBorder" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#fff2b2"/>
+                <stop offset="35%" stop-color="#d4af37"/>
+                <stop offset="70%" stop-color="#8a671c"/>
+                <stop offset="100%" stop-color="#e8ca74"/>
+              </linearGradient>
+              <!-- 白（象牙）駒グラデーション -->
+              <radialGradient id="ivoryShade" cx="35%" cy="30%" r="70%">
+                <stop offset="0%" stop-color="#ffffff"/>
+                <stop offset="65%" stop-color="#eee6d3"/>
+                <stop offset="100%" stop-color="#b8aa88"/>
+              </radialGradient>
+              <!-- 黒（漆黒）駒グラデーション -->
+              <radialGradient id="onyxShade" cx="35%" cy="30%" r="70%">
+                <stop offset="0%" stop-color="#464a52"/>
+                <stop offset="60%" stop-color="#1c1e22"/>
+                <stop offset="100%" stop-color="#08090a"/>
+              </radialGradient>
+              <!-- 駒ドロップシャドウ -->
+              <filter id="checkerShadow" x="-30%" y="-30%" width="160%" height="160%">
+                <feDropShadow dx="0" dy="6" stdDeviation="5" flood-color="#000000" flood-opacity="0.65"/>
+              </filter>
+            </defs>
+
+            <!-- 外枠：八角形風の真鍮ベゼルプレート -->
+            <rect x="10" y="10" width="180" height="180" rx="40" fill="url(#emblemBg)" stroke="url(#brassBorder)" stroke-width="4"/>
+            <rect x="18" y="18" width="164" height="164" rx="32" fill="none" stroke="rgba(212,175,55,0.3)" stroke-width="1.5"/>
+
+            <!-- 上下対向の三角ポイント（クリムゾン & アイボリー） -->
+            <!-- 上側三角 -->
+            <polygon points="40,20 62,92 18,92" fill="#8c1e17" opacity="0.95"/>
+            <polygon points="80,20 102,92 58,92" fill="#dfd1b3" opacity="0.95"/>
+            <polygon points="120,20 142,92 98,92" fill="#8c1e17" opacity="0.95"/>
+            <polygon points="160,20 182,92 138,92" fill="#dfd1b3" opacity="0.95"/>
+
+            <!-- 下側三角 -->
+            <polygon points="40,180 62,108 18,108" fill="#dfd1b3" opacity="0.95"/>
+            <polygon points="80,180 102,108 58,108" fill="#8c1e17" opacity="0.95"/>
+            <polygon points="120,180 142,108 98,108" fill="#dfd1b3" opacity="0.95"/>
+            <polygon points="160,180 182,108 138,108" fill="#8c1e17" opacity="0.95"/>
+
+            <!-- 中央の仕切りバーのニュアンス -->
+            <line x1="100" y1="20" x2="100" y2="180" stroke="#2d1408" stroke-width="6" opacity="0.6"/>
+
+            <!-- バックギャモン象徴：2色の対峙する立体駒（チェッカー） -->
+            <!-- 黒（漆黒）チェッカー（左） -->
+            <g filter="url(#checkerShadow)">
+              <circle cx="76" cy="100" r="30" fill="url(#onyxShade)" stroke="#4a4d53" stroke-width="2"/>
+              <circle cx="76" cy="100" r="21" fill="none" stroke="rgba(255,255,255,0.22)" stroke-width="1.5"/>
+              <circle cx="76" cy="100" r="10" fill="none" stroke="rgba(212,175,55,0.4)" stroke-width="1"/>
+            </g>
+
+            <!-- 白（象牙）チェッカー（右・手前に重なる） -->
+            <g filter="url(#checkerShadow)">
+              <circle cx="124" cy="100" r="30" fill="url(#ivoryShade)" stroke="#b8ab8b" stroke-width="2"/>
+              <circle cx="124" cy="100" r="21" fill="none" stroke="rgba(138,120,90,0.45)" stroke-width="1.5"/>
+              <circle cx="124" cy="100" r="10" fill="none" stroke="rgba(212,175,55,0.6)" stroke-width="1"/>
+            </g>
+          </svg>
+        </div>
+
         <h1 class="title-logo">BACKGAMMON</h1>
         <div class="title-subtitle" data-i18n="subtitle">THE HERITAGE BOARD GAME</div>
       </div>
